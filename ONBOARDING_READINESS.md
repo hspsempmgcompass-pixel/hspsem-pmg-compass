@@ -110,11 +110,14 @@ Weekly = 3 intro + **8** KIs as Real/Meta pairs. See `METRIC_CATALOG_ES.md` v2 (
 - [x] **Exact official mission name** — Honduras San Pedro Sula East Mission
 - [~] **President contact** — system account `hspsem.pmg.compass@gmail.com` given; personal Church
   email + phone still needed for leadership-report routing
-- [ ] **Area roster** — every proselyting area + both companion Church emails — *President: export
-  from mission org*
-- [ ] **Leadership roster** — ZLs, STLs, DLs, APs, President + spouse: name, calling, zone/district,
-  Church email, who receives the nightly leadership report — *President: from mission org*
-- [ ] **Zone count / district count** — *President: from mission org*
+- [~] **Area roster** — IMOS CurrentOrganization export parsed 2026-08-29 → `roster_staging/`.
+  **10 zones, 27 districts, 81 teaching areas, 164 teaching missionaries.** Structure complete;
+  **companion emails MISSING** — that export has phone only. Blocker: get an IMOS export with
+  email, or an office area-email list.
+- [~] **Leadership roster** — `roster_staging/LEADERSHIP.csv`: 20 ZLs, 27 DLs, 4 STLs, 2 APs by
+  name. **Emails missing** (same gap). President + spouse not in the export — need separately.
+  Nightly-report recipients undecided.
+- [x] **Zone count / district count** — 10 teaching zones, 27 districts (+ 1 excluded service zone).
 - [ ] **Knowledge Base** Q&A — President: "we will form this later" (non-blocking)
 - [ ] **Coaching-message customizations** — President: "we will also make this later"
 

@@ -36,8 +36,16 @@
  *   runAgentEscalation   Daily     7:00 AM   escalation System 1 + System 2
  *   runAgent4            Monday    7:00 AM   system health check + self-heal
  *   runAgentScores       Monday   12:05 AM   weekly area scores
- *   runAgentMissionReport Monday  10:00 PM   mission-wide numbers for AP/MP
  *   runAgent2            (none)              MANUAL — run once per transfer
+ *
+ * runAgentMissionReport is DISABLED — deliberately NOT in the schedule below
+ * (2026-08-29, roster-load lockdown). No leadership/mission report is wanted
+ * yet. The function itself also no-ops immediately (see
+ * HSPSEM_AgentMissionReport.gs's AMR_DISABLED guard) and its recipient
+ * collector is hard-forced empty, so even a stray manual run or a future
+ * accidental re-add here sends nothing. Re-enable deliberately: flip
+ * AMR_DISABLED to false, restore amr_collectApMpRecipients()'s real body,
+ * and add the trigger row back.
  *
  * Plus TWO installable form-submit triggers, which are NOT time-based and so
  * are not part of the table above (they fire when a missionary presses Submit,
@@ -214,8 +222,8 @@ var HSPSEM_TRIGGER_SCHEDULE = [
   { fn: 'runAgentDuplicate',  everyDays: 1,          hour: 21, minute: 30,   describe: 'Daily 9:30 PM' },
   { fn: 'runAgentEscalation', everyDays: 1,          hour: 7,                describe: 'Daily 7:00 AM' },
   { fn: 'runAgent4',          weekDay: 'MONDAY',     hour: 7,                describe: 'Monday 7:00 AM' },
-  { fn: 'runAgentScores',     weekDay: 'MONDAY',     hour: 0,  minute: 5,    describe: 'Monday 12:05 AM' },
-  { fn: 'runAgentMissionReport', weekDay: 'MONDAY',  hour: 22,               describe: 'Monday 10:00 PM (mission-wide numbers, AP/MP)' }
+  { fn: 'runAgentScores',     weekDay: 'MONDAY',     hour: 0,  minute: 5,    describe: 'Monday 12:05 AM' }
+  // runAgentMissionReport intentionally OMITTED — disabled, see file header.
 ];
 
 /**

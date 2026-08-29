@@ -16,12 +16,12 @@
  *     moved-away RCs of unknown whereabouts.
  *   - 8 KIs now (was 7 in the v1 draft) — 16 Real/Meta questions total.
  *
- * ZONE/AREA DATA: AREAS_ROWS below is sourced from config/AREAS.csv (Zone,Area
- * columns) — currently EMPTY, roster not yet provided (ONBOARDING_READINESS.md
- * §5). Do NOT run buildWeeklyReportFormES() until it's populated; an empty
- * roster builds a form with zero zone/area sections. Keep this array in sync
- * with config/AREAS.csv and with HspsemData.gs's HSPSEM_AREAS_ROWS — all three
- * must match (same pattern CCSM used for its ZONES/CCSM_ZONES pair).
+ * ZONE/AREA DATA: ZONES + AREAS_ROWS below are sourced from the IMOS roster
+ * export (roster_staging/, 2026-08-29) — 10 zones, 81 areas, President-
+ * confirmed alphabetical zone order. Keep both in sync with config/AREAS.csv
+ * and with HspsemData.gs's HSPSEM_ZONES/HSPSEM_AREAS_ROWS — all three copies
+ * must match (same pattern CCSM used for its ZONES/CCSM_ZONES pair). The
+ * "Misioneros de Servicio" zone is permanently excluded — never add it here.
  *
  * PER-ZONE SECTION LOOKUP: grouped via areaChoicesForZone_() below, which
  * resolves the 'Zone'/'Area' column positions by NAME once (into a map),
@@ -57,11 +57,45 @@
  */
 
 // ==================================================================
-// DATA — zone/area roster, sourced from config/AREAS.csv (Zone,Area
-// columns). TODO(roster): EMPTY — populate before running the builder.
+// DATA — zone dropdown order, President-confirmed 2026-08-29 (alphabetical).
+// Drives the per-zone section loop below.
+// ==================================================================
+var ZONES = ["El Carmen", "La Ceiba", "La Paz", "Miramar", "Olanchito", "Palermo", "Planeta", "Progreso", "Santa Rita", "Satélite"];
+
+// ==================================================================
+// DATA — the 81 teaching areas (Zone,Area), sourced from config/AREAS.csv.
+// Area order within each zone follows district grouping — confirmed fine.
 // ==================================================================
 var AREAS_HEADERS = ['Zone', 'Area'];
-var AREAS_ROWS = []; // TODO(roster): paste rows from config/AREAS.csv here
+var AREAS_ROWS = [
+  ['El Carmen', 'El Carmen'], ['El Carmen', 'La Aldea 1'], ['El Carmen', 'Ocotillo'],
+  ['El Carmen', 'Calpules'], ['El Carmen', 'Las Lomas'], ['El Carmen', 'San Juan'],
+  ['La Ceiba', 'Acacias'], ['La Ceiba', 'Jutiapa'], ['La Ceiba', 'Pizzaty 1'],
+  ['La Ceiba', 'Pizzaty 2'], ['La Ceiba', 'El Imán'], ['La Ceiba', 'Independencia'],
+  ['La Ceiba', 'Lempira 1'], ['La Ceiba', 'Lempira 2'], ['La Ceiba', 'Flowers Bay'],
+  ['La Ceiba', 'Los Fuertes'], ['La Ceiba', 'Roatán'], ['La Ceiba', 'Sandy Bay'],
+  ['La Ceiba', 'Utila'], ['La Paz', 'Flores de Oriente'], ['La Paz', 'La Paz'],
+  ['La Paz', 'Pineda'], ['La Paz', 'El Porvenir'], ['La Paz', 'La Sabana'],
+  ['La Paz', 'San Manuel 2'], ['Miramar', 'Buenos Aires'], ['Miramar', 'Confite 1'],
+  ['Miramar', 'Confite 2'], ['Miramar', 'La Masica'], ['Miramar', 'Mezapita'],
+  ['Miramar', 'San Juan Pueblo'], ['Miramar', 'Miramar'], ['Miramar', 'Montecristo 1'],
+  ['Miramar', 'Montecristo 2'], ['Olanchito', 'Bellavista'], ['Olanchito', 'Coyoles 1'],
+  ['Olanchito', 'Coyoles 2'], ['Olanchito', 'Olanchito'], ['Olanchito', 'Sabá 1'],
+  ['Olanchito', 'Sabá 2'], ['Olanchito', 'Isletas Central'], ['Olanchito', 'Sonaguera 1'],
+  ['Olanchito', 'Sonaguera 2'], ['Olanchito', 'Tocoa 1'], ['Olanchito', 'Tocoa 2'],
+  ['Olanchito', 'Trujillo 1'], ['Olanchito', 'Trujillo 2'], ['Palermo', 'Palermo'],
+  ['Palermo', 'Sarrosa 1'], ['Palermo', 'Sarrosa 2'], ['Palermo', 'Bendeck'],
+  ['Palermo', 'Palmeras'], ['Palermo', 'William Hall'], ['Planeta', 'Jerusalén 1'],
+  ['Planeta', 'La Mesa'], ['Planeta', 'La Lima 1'], ['Planeta', 'La Lima 2'],
+  ['Planeta', 'Planeta 1'], ['Planeta', 'Planeta 2'], ['Progreso', 'Berlín 1'],
+  ['Progreso', 'Berlín 2'], ['Progreso', 'Mezapa'], ['Progreso', 'Corocol'],
+  ['Progreso', 'El Centro'], ['Progreso', 'Jazmines'], ['Progreso', 'Progreso'],
+  ['Progreso', 'Tela'], ['Progreso', 'Telamar'], ['Santa Rita', 'El Negrito'],
+  ['Santa Rita', 'Morazán 1'], ['Santa Rita', 'Aguablanca'], ['Santa Rita', 'Santa Rita'],
+  ['Santa Rita', 'Yoro 1'], ['Santa Rita', 'Yoro 2'], ['Satélite', 'Central'],
+  ['Satélite', 'Los Ángeles'], ['Satélite', 'Seis de Mayo 1'], ['Satélite', 'Luisiana 1'],
+  ['Satélite', 'Planes'], ['Satélite', 'Satelite 1'], ['Satélite', 'Satelite 2']
+];
 
 // Resolves 'Zone'/'Area' column positions by NAME once, then groups
 // AREAS_ROWS into per-zone sections: { zoneName: [areaName, ...] }.
@@ -72,19 +106,18 @@ function buildZoneSections_() {
   AREAS_HEADERS.forEach(function(h, i) { col[h] = i; });
 
   var sections = {};
-  var zoneOrder = [];
   AREAS_ROWS.forEach(function(row) {
     var zone = row[col['Zone']];
     var area = row[col['Area']];
-    if (!sections[zone]) { sections[zone] = []; zoneOrder.push(zone); }
+    if (!sections[zone]) { sections[zone] = []; }
     sections[zone].push(area);
   });
-  return { sections: sections, zoneOrder: zoneOrder };
+  return sections;
 }
 
 // Returns the area list ("section") for a single zone name.
 function areaChoicesForZone_(zoneName) {
-  return buildZoneSections_().sections[zoneName] || [];
+  return buildZoneSections_()[zoneName] || [];
 }
 
 // ==================================================================
@@ -154,9 +187,8 @@ function buildWeeklyReportFormES() {
 
   // One section per zone.
   var zoneChoices = [];
-  var zoneOrder = buildZoneSections_().zoneOrder;
-  for (var i = 0; i < zoneOrder.length; i++) {
-    var zone = zoneOrder[i];
+  for (var i = 0; i < ZONES.length; i++) {
+    var zone = ZONES[i];
 
     var pageBreak = form.addPageBreakItem();
     setMeta_(pageBreak, zone, null);

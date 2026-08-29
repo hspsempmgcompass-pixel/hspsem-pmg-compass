@@ -20,12 +20,15 @@
  * Weekly = 8 KIs (ki_member_lessons KEPT + reworded, ki_rc_could_attend
  * KEPT). See METRIC_CATALOG_ES.md for full provenance per metric.
  *
- * TODO(roster): HSPSEM_AREAS_ROWS and HSPSEM_MISSION_ORG_ROWS are
- * intentionally empty — the HSPSE zone/area/companionship roster has not
- * been provided yet (ONBOARDING_READINESS.md §5). Populate both from the
- * mission's roster export (see tools/emit_mission_org.py) before running
- * BuildHspsemSheet.gs. Keep HSPSEM_AREAS_ROWS in sync with config/AREAS.csv
- * AND with the standalone form builders' own copies (HSPSEM_DailyReportForm_ES.gs /
+ * ROSTER (2026-08-29): zones + areas loaded from the IMOS CurrentOrganization
+ * export (roster_staging/, parsed by parse_hspse_org.py) — 10 teaching zones,
+ * 27 districts, 81 areas, 164 teaching missionaries. The "Misioneros de
+ * Servicio" zone (10 service missionaries) is permanently excluded from
+ * areas/metrics/MISSION_ORG — never add it. HSPSEM_MISSION_ORG_ROWS is
+ * still empty: the export has no email column, so companion logins can't be
+ * built yet (see roster_staging/README.md "THE BLOCKER"). Keep
+ * HSPSEM_AREAS_ROWS/HSPSEM_ZONES in sync with config/AREAS.csv AND with the
+ * standalone form builders' own copies (HSPSEM_DailyReportForm_ES.gs /
  * HSPSEM_WeeklyReportForm_ES.gs — separate Apps Script projects, so they
  * each carry their own literal, same as CCSM's ZONES/CCSM_ZONES pattern).
  *
@@ -38,14 +41,104 @@
  */
 
 // ==================================================================
-// AREAS — HSPSE zone/area roster, sourced from config/AREAS.csv (Zone,Area
-// columns). NOT YET POPULATED (see file header TODO). Replaces the old
-// HSPSEM_ZONES map — group into per-zone sections via the same
-// areaChoicesForZone_()-style lookup the form builders use (resolve columns by
-// name once, never headers.indexOf()).
+// ZONES — dropdown order, President-confirmed 2026-08-29 (alphabetical).
+// Drives the per-zone section loop in both form builders and here; area
+// choices within each zone come from HSPSEM_AREAS_ROWS below via
+// areaChoicesForZone_()-style grouping (resolve columns by name once,
+// never headers.indexOf()).
+// ==================================================================
+var HSPSEM_ZONES = ["El Carmen", "La Ceiba", "La Paz", "Miramar", "Olanchito", "Palermo", "Planeta", "Progreso", "Santa Rita", "Satélite"];
+
+// ==================================================================
+// AREAS — HSPSE's 81 teaching areas, sourced from config/AREAS.csv
+// (Zone,Area columns; also mirrors roster_staging/hspsem_areas_rows.txt).
+// Area order within each zone follows district grouping (see
+// roster_staging/areas_with_districts.csv) — confirmed fine as-is.
 // ==================================================================
 var HSPSEM_AREAS_HEADERS = ['Zone', 'Area'];
-var HSPSEM_AREAS_ROWS = []; // TODO(roster): fill from config/AREAS.csv once received
+var HSPSEM_AREAS_ROWS = [
+  ['El Carmen', 'El Carmen'],
+  ['El Carmen', 'La Aldea 1'],
+  ['El Carmen', 'Ocotillo'],
+  ['El Carmen', 'Calpules'],
+  ['El Carmen', 'Las Lomas'],
+  ['El Carmen', 'San Juan'],
+  ['La Ceiba', 'Acacias'],
+  ['La Ceiba', 'Jutiapa'],
+  ['La Ceiba', 'Pizzaty 1'],
+  ['La Ceiba', 'Pizzaty 2'],
+  ['La Ceiba', 'El Imán'],
+  ['La Ceiba', 'Independencia'],
+  ['La Ceiba', 'Lempira 1'],
+  ['La Ceiba', 'Lempira 2'],
+  ['La Ceiba', 'Flowers Bay'],
+  ['La Ceiba', 'Los Fuertes'],
+  ['La Ceiba', 'Roatán'],
+  ['La Ceiba', 'Sandy Bay'],
+  ['La Ceiba', 'Utila'],
+  ['La Paz', 'Flores de Oriente'],
+  ['La Paz', 'La Paz'],
+  ['La Paz', 'Pineda'],
+  ['La Paz', 'El Porvenir'],
+  ['La Paz', 'La Sabana'],
+  ['La Paz', 'San Manuel 2'],
+  ['Miramar', 'Buenos Aires'],
+  ['Miramar', 'Confite 1'],
+  ['Miramar', 'Confite 2'],
+  ['Miramar', 'La Masica'],
+  ['Miramar', 'Mezapita'],
+  ['Miramar', 'San Juan Pueblo'],
+  ['Miramar', 'Miramar'],
+  ['Miramar', 'Montecristo 1'],
+  ['Miramar', 'Montecristo 2'],
+  ['Olanchito', 'Bellavista'],
+  ['Olanchito', 'Coyoles 1'],
+  ['Olanchito', 'Coyoles 2'],
+  ['Olanchito', 'Olanchito'],
+  ['Olanchito', 'Sabá 1'],
+  ['Olanchito', 'Sabá 2'],
+  ['Olanchito', 'Isletas Central'],
+  ['Olanchito', 'Sonaguera 1'],
+  ['Olanchito', 'Sonaguera 2'],
+  ['Olanchito', 'Tocoa 1'],
+  ['Olanchito', 'Tocoa 2'],
+  ['Olanchito', 'Trujillo 1'],
+  ['Olanchito', 'Trujillo 2'],
+  ['Palermo', 'Palermo'],
+  ['Palermo', 'Sarrosa 1'],
+  ['Palermo', 'Sarrosa 2'],
+  ['Palermo', 'Bendeck'],
+  ['Palermo', 'Palmeras'],
+  ['Palermo', 'William Hall'],
+  ['Planeta', 'Jerusalén 1'],
+  ['Planeta', 'La Mesa'],
+  ['Planeta', 'La Lima 1'],
+  ['Planeta', 'La Lima 2'],
+  ['Planeta', 'Planeta 1'],
+  ['Planeta', 'Planeta 2'],
+  ['Progreso', 'Berlín 1'],
+  ['Progreso', 'Berlín 2'],
+  ['Progreso', 'Mezapa'],
+  ['Progreso', 'Corocol'],
+  ['Progreso', 'El Centro'],
+  ['Progreso', 'Jazmines'],
+  ['Progreso', 'Progreso'],
+  ['Progreso', 'Tela'],
+  ['Progreso', 'Telamar'],
+  ['Santa Rita', 'El Negrito'],
+  ['Santa Rita', 'Morazán 1'],
+  ['Santa Rita', 'Aguablanca'],
+  ['Santa Rita', 'Santa Rita'],
+  ['Santa Rita', 'Yoro 1'],
+  ['Santa Rita', 'Yoro 2'],
+  ['Satélite', 'Central'],
+  ['Satélite', 'Los Ángeles'],
+  ['Satélite', 'Seis de Mayo 1'],
+  ['Satélite', 'Luisiana 1'],
+  ['Satélite', 'Planes'],
+  ['Satélite', 'Satelite 1'],
+  ['Satélite', 'Satelite 2']
+];
 
 // ==================================================================
 // NIGHTLY (daily) metric map — one row per question on the nightly form,
@@ -123,7 +216,7 @@ var HSPSEM_FORM_STRUCTURAL = {
 // still needed).
 // ==================================================================
 var HSPSEM_AGENT_CONFIG_ROWS = [
-  ['MISSION_NAME', 'Honduras San Pedro Sula East Mission'], // TODO(confirm): provisional — exact official name still needed (readiness §5)
+  ['MISSION_NAME', 'Honduras San Pedro Sula East Mission'], // confirmed official 2026-08-29 (readiness §5)
   ['MISSION_LANGUAGE', 'ES'],
   ['MISSION_TIMEZONE', 'America/Tegucigalpa'],
   ['MISSION_LOCALE', 'es_HN'],
@@ -159,15 +252,109 @@ var HSPSEM_AGENT_CONFIG_ROWS = [
 ];
 
 // ==================================================================
-// MISSION_ORG — same header shape as CCSM's. NOT YET POPULATED: HSPSE's
-// roster has not been provided (readiness §5). Do NOT copy CCSM's roster
-// rows here — those are real CCSM missionaries' names/data and do not
-// belong to a different mission's sheet.
+// MISSION_ORG — same header shape as CCSM's. Names/zones/districts/areas
+// and leadership flags are populated from the IMOS roster export
+// (roster_staging/roster.tsv, 2026-08-29); Companion*_Email is
+// intentionally BLANK on every row — the IMOS export has no email column
+// (roster_staging/README.md "THE BLOCKER"), so nothing here was guessed or
+// constructed. Do not fill an email in without a real source.
+//
+// Row 1 (A000) is the Mission President — not a real teaching area, flagged
+// Is_MP=TRUE. Companion2 (spouse) name/email intentionally blank pending
+// that info. All other rows (A001-A081) are the 81 real teaching areas;
+// Companion1/Companion2 assignment follows roster.tsv's senior/junior slot,
+// except the two 3-missionary anomalies (La Paz/La Paz, Palermo/William
+// Hall/William Hall — see roster_staging/anomalies.txt), where the extra
+// name is appended into Companion2 joined by ' / ', mirroring CCSM's own
+// precedent for a trio companionship.
 // ==================================================================
 var HSPSEM_MISSION_ORG_HEADERS = ['Area_Code','Area_Name','Zone','District','Companion1_Name','Companion1_Email',
    'Companion2_Name','Companion2_Email','Is_DL','Is_ZL','Is_STL','Is_AP','Is_MP','Active'];
 
-var HSPSEM_MISSION_ORG_ROWS = []; // TODO(roster): populate from mission's roster export (tools/emit_mission_org.py)
+var HSPSEM_MISSION_ORG_ROWS = [
+  ['A000', 'Presidencia de Misión', '', '', 'Christensen, Kirt', 'kirt.christensen@churchofjesuschrist.org', '', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE', 'TRUE'],
+  ['A001', 'El Carmen', 'El Carmen', 'La Aldea', 'Dominguez Zurita, Elied Vanesa', '', 'Peralta Estrada, Cindy Junieth', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A002', 'La Aldea 1', 'El Carmen', 'La Aldea', 'Zaldivar Leiva, Leonardo Alexander', '', 'Brown, Hudson Ron', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A003', 'Ocotillo', 'El Carmen', 'La Aldea', 'Saunders, Mason Jonathan', '', 'Valle Limachi, Rafael Matias', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A004', 'Calpules', 'El Carmen', 'Las Lomas', 'Alonso Monroy, Sebastián', '', 'Logans Zabala, Mijael', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A005', 'Las Lomas', 'El Carmen', 'Las Lomas', 'Hansen, Miles William', '', 'Vásquez González, Diego José', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A006', 'San Juan', 'El Carmen', 'Las Lomas', 'Ortega, Elizabeth Nina', '', 'Carvajal, Sophia Isabella', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A007', 'Acacias', 'La Ceiba', 'Acasias', 'López Véliz, Pablo David', '', 'Tau\'ataina, Manisela Dwayne', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A008', 'Jutiapa', 'La Ceiba', 'Acasias', 'Rodas Estrada, José Antonio', '', 'Williams, Benjamin Bryan', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A009', 'Pizzaty 1', 'La Ceiba', 'Acasias', 'Echegaray, Ania Carolina', '', 'Adams, Kaleigh Joy', '', 'FALSE', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A010', 'Pizzaty 2', 'La Ceiba', 'Acasias', 'Ramirez Suarez, Cristina', '', 'Fuentes Meléndez, Alisson Belén', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A011', 'El Imán', 'La Ceiba', 'Lempira', 'Garcia Pérez, Luis Antonio', '', 'Fields, Brody Owen', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A012', 'Independencia', 'La Ceiba', 'Lempira', 'Sac Rodríguez, Ryan Oliver', '', 'Tambito Lopez, Emerson Aníbal', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A013', 'Lempira 1', 'La Ceiba', 'Lempira', 'Najarro Aguilar, Jorge Eli', '', 'Call, Ethan Mcarthur', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A014', 'Lempira 2', 'La Ceiba', 'Lempira', 'Jimenez Alvaradejo, Alfredo', '', 'Leonor Urbina, Audelio Isaac', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A015', 'Flowers Bay', 'La Ceiba', 'Roatán', 'Nielson, Jacob Gail', '', 'Smith Yanes, Armando Roy', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A016', 'Los Fuertes', 'La Ceiba', 'Roatán', 'Carmona González, Belkan Olivier', '', 'Calderón Cosiguá, Luis Rodrigo', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A017', 'Roatán', 'La Ceiba', 'Roatán', 'Poulsen, Braxton K', '', 'Baczuk, Andrew Joseph', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A018', 'Sandy Bay', 'La Ceiba', 'Roatán', 'Barton, Aidan William', '', 'Grissom, Kimball W', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A019', 'Utila', 'La Ceiba', 'Roatán', 'Kelly, Kekoa Kapono', '', 'Jimenez Parra, Helam', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A020', 'Flores de Oriente', 'La Paz', 'La Paz', 'Pérez Ajucúm, Victor José', '', 'Lemus, Ixcayau, Dallin', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A021', 'La Paz', 'La Paz', 'La Paz', 'Crane, Jace Ryan', '', 'Ortega Rosales, Jose Samuel / Wolff, Carsen Mathew', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A022', 'Pineda', 'La Paz', 'La Paz', 'Nicoll, William Bentley', '', 'Nova Santizo, David Ricardo', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A023', 'El Porvenir', 'La Paz', 'La Sabana', 'Oviedo Garcia, Aaron Efraín', '', 'Gingras, Keegan Joseph', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A024', 'La Sabana', 'La Paz', 'La Sabana', 'Flint, Aiden Harrison', '', 'Diaz Oscal, Jersson Pablo Abinadi', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A025', 'San Manuel 2', 'La Paz', 'La Sabana', 'Wood, Trux Harker', '', 'Calixto Avila, Zahid Arturo', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A026', 'Buenos Aires', 'Miramar', 'Confite', 'Castellanos Gálvez, Dulce Rebeca', '', 'Espinoza Espinoza, Luz Amparo', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A027', 'Confite 1', 'Miramar', 'Confite', 'Nailati, Timoci Egbert', '', 'Green Chay, Jorge Juan José', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A028', 'Confite 2', 'Miramar', 'Confite', 'Alger, Jackson D', '', 'McNaughtan, Nolan George', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A029', 'La Masica', 'Miramar', 'La Masica', 'Hernandez Carreto, Jeffrey Efrain', '', 'Rodas Fonseca, Jose Mario', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A030', 'Mezapita', 'Miramar', 'La Masica', 'Baker, David Dean', '', 'Salanic Colop, Yunior Emanuel', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A031', 'San Juan Pueblo', 'Miramar', 'La Masica', 'Smith, Seth Nicholas', '', 'Abelar Escobar, Guillermo Adolfo', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A032', 'Miramar', 'Miramar', 'Montecristo', 'Delgado Davis, Angeline Victoria', '', 'Cordova Toscano, Estrella Mía', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A033', 'Montecristo 1', 'Miramar', 'Montecristo', 'Gornichec, Evan Isaac', '', 'Jones, Tate Aaron', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A034', 'Montecristo 2', 'Miramar', 'Montecristo', 'Rhoades, Trey Adam', '', 'Salarayan, Thiago Bautista', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A035', 'Bellavista', 'Olanchito', 'Olanchito', 'Solis Pérez, Delfinencio Adicaliler', '', 'Zamora Ramirez, Himni Leonardo', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A036', 'Coyoles 1', 'Olanchito', 'Olanchito', 'Castillo Madrid, Joel Antonio', '', 'Voth, Graysen Glenn', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A037', 'Coyoles 2', 'Olanchito', 'Olanchito', 'McDowell, Cooper James', '', 'Rodriguez Llanes, Carlos Andres', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A038', 'Olanchito', 'Olanchito', 'Olanchito', 'QUEJ CÚ, KEVIN YOBANI', '', 'Coleman, Aden Victor', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A039', 'Sabá 1', 'Olanchito', 'Sabá', 'Peck, Jaden Carter', '', 'Starkes, Eric Andrew', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A040', 'Sabá 2', 'Olanchito', 'Sabá', 'Steadman, McKay Marlin', '', 'Barnes, Jayce Walker', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A041', 'Isletas Central', 'Olanchito', 'Sonaguera', 'Faiese, Tony Andre', '', 'Escobar Salazar, Diego Roberto', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A042', 'Sonaguera 1', 'Olanchito', 'Sonaguera', 'Cumatz Roquel, Edgar Israel', '', 'Gòmez Garcìa, Edward Amós', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A043', 'Sonaguera 2', 'Olanchito', 'Sonaguera', 'Camacho Gonzalez, Juan Sebastián', '', 'Padilla Aragon, Dallin Samir', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A044', 'Tocoa 1', 'Olanchito', 'Tocoa', 'Centeno Miranda, Josué Yunerly', '', 'Leal Macz, Rodrigo Marcoandrés', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A045', 'Tocoa 2', 'Olanchito', 'Tocoa', 'Mitchell, Brett Nephi', '', 'Jones, Cade McCoy', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A046', 'Trujillo 1', 'Olanchito', 'Trujillo', 'Cadavid, Daniel Smith', '', 'García Reyes, Michael Steven', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A047', 'Trujillo 2', 'Olanchito', 'Trujillo', 'Rednour, Luke Archibald', '', 'Morillo Molina, Angel Vicente', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A048', 'Palermo', 'Palermo', 'Palermo', 'Juarez Orozco, Yordy Geancarlo', '', 'McCune, Spencer Weston', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A049', 'Sarrosa 1', 'Palermo', 'Palermo', 'Dodds, Ryan Asa', '', 'Cordova Melendez, Aldo Sebastian', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A050', 'Sarrosa 2', 'Palermo', 'Palermo', 'Conde Salgado, Parley Yair', '', 'Bravo Xelhuantzi, Samuel', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A051', 'Bendeck', 'Palermo', 'William Hall', 'Reese, Noah Miller', '', 'Pacheco Panta, Alexander', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A052', 'Palmeras', 'Palermo', 'William Hall', 'Navarro Canizalez, Wendy Ivette', '', 'Perlaza Ibarra, Darla', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A053', 'William Hall', 'Palermo', 'William Hall', 'Munguia Rosas, Angie Mariel', '', 'Castellanos Fuentes, Génesis María / Viera Mesa, Belkis Carolina', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A054', 'Jerusalén 1', 'Planeta', 'Jerusalén', 'Douglass, Chance Tyler', '', 'Trythall, Cannon Drew', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A055', 'La Mesa', 'Planeta', 'Jerusalén', 'Epifania Moquillaza, Fiorella Anthuanet', '', 'Foreman, Sydnee Davelle', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A056', 'La Lima 1', 'Planeta', 'Planeta', 'Griffiths, Keira Marie', '', 'García Beltrán, Hazel Dayanara', '', 'FALSE', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A057', 'La Lima 2', 'Planeta', 'Planeta', 'Da Cunha, José Luiz Silva', '', 'Williams, Jack Richard', '', 'FALSE', 'FALSE', 'FALSE', 'TRUE', 'FALSE', 'TRUE'],
+  ['A058', 'Planeta 1', 'Planeta', 'Planeta', 'Berg, Noah Gordon', '', 'Fernandez Hidalgo, Jose Leonardo', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A059', 'Planeta 2', 'Planeta', 'Planeta', 'Jurca, Joseph Hank', '', 'Montero Aguirre, Carlos Eduardo', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A060', 'Berlín 1', 'Progreso', 'Berlín', 'Steinheiser, Michael Paul', '', 'Bejarano Vacaflor, Ebrajan Uriel', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A061', 'Berlín 2', 'Progreso', 'Berlín', 'Paul, Samuel Gunner', '', 'Chuni Chuni., Oscar Emanuel', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A062', 'Mezapa', 'Progreso', 'Berlín', 'Avila, Benjamin Ignacio', '', 'Pizarro, Johan Esteban', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A063', 'Corocol', 'Progreso', 'Progreso', 'Wilson, Brayden Marlow', '', 'Fajardo Zambrano, Adán Matías', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A064', 'El Centro', 'Progreso', 'Progreso', 'González Escobedo, Dillan Daniel', '', 'Cevallos Indio, Abraham Wilfrido', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A065', 'Jazmines', 'Progreso', 'Progreso', 'Castillo Flores, Obryan Ernesto', '', 'Cook, Nathan McKay', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A066', 'Progreso', 'Progreso', 'Progreso', 'Axtell, Landon Joseph', '', 'Benítez Martínez, Inmer Omar', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A067', 'Tela', 'Progreso', 'Tela', 'Chadwick, Karsyn Ray', '', 'Barrios García, Gustavo Eliú', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A068', 'Telamar', 'Progreso', 'Tela', 'Villaseñor Esteban, André Juan Abinadí', '', 'Sánchez Flores, Henry David', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A069', 'El Negrito', 'Santa Rita', 'Morazán', 'Barclay, William Campbell', '', 'Brown, Soren Thomas Grant', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A070', 'Morazán 1', 'Santa Rita', 'Morazán', 'De los Santos Inoa, Wilmer Michael', '', 'Jimenez Abrego, Efrain', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A071', 'Aguablanca', 'Santa Rita', 'Santa Rita', 'Alvarez Espinoza, ERVIN MARIANO', '', 'Milflores Sevilla, Jose Armando', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A072', 'Santa Rita', 'Santa Rita', 'Santa Rita', 'Caal Lemus, Benjamín Isaí', '', 'Huber, Luke Walton', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A073', 'Yoro 1', 'Santa Rita', 'Yoro', 'Baer, Spencer Joseph', '', 'Ibañez Alfaro, Brayan Alexander', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A074', 'Yoro 2', 'Santa Rita', 'Yoro', 'Cocón Tum, Jeffrey David', '', 'Ballantyne, Michael Adam', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A075', 'Central', 'Satélite', 'Central', 'Garcia Alcantara, Axel Augusto', '', 'Amacio López, Yael Lenos', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A076', 'Los Ángeles', 'Satélite', 'Central', 'Centeno Salgado, Andrés Ismael', '', 'Maravilla Cerón, Vitner Abinadi', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A077', 'Seis de Mayo 1', 'Satélite', 'Central', 'Rosales Tiul, Edwin Rene', '', 'Garcia Vega, Moises Aaron', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A078', 'Luisiana 1', 'Satélite', 'Satelite', 'Tatlow, Kael Robert', '', 'Videa Ramirez, William Samuel', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A079', 'Planes', 'Satélite', 'Satelite', 'López Vásquez, Marvin Antulio', '', 'Morales Rodriguez, Saul Zadrack', '', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A080', 'Satelite 1', 'Satélite', 'Satelite', 'Adanaque Arriaga, Christian Edwin', '', 'Thompson, Spencer John', '', 'FALSE', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'TRUE'],
+  ['A081', 'Satelite 2', 'Satélite', 'Satelite', 'Rodriguez, Martin Ignacio', '', 'Santana Villacreses, Helamen', '', 'TRUE', 'FALSE', 'FALSE', 'FALSE', 'FALSE', 'TRUE']
+];
 
 // ==================================================================
 // TAB_SPECS — one entry per sheet tab the builder creates. Identical shape

@@ -46,11 +46,33 @@
  *
  * REQUIRED AGENT_CONFIG KEYS: none beyond what every agent already reads
  * (MISSION_TIMEZONE, TEST_MODE / TEST_INBOX_EMAIL via HSPSEM_AgentTestMode.gs).
+ *
+ * DISABLED (2026-08-29, roster-load lockdown): no leadership/mission report
+ * is wanted yet. Two independent layers, so this stays inert even if one is
+ * ever bypassed:
+ *   1. AMR_DISABLED below — runAgentMissionReport() logs and returns
+ *      immediately, before touching MISSION_ORG, DAILY_LOG, or SCORES.
+ *   2. amr_collectApMpRecipients() is hard-forced to return [] regardless of
+ *      MISSION_ORG content — even a direct/manual call to this function
+ *      gathers no recipients (the President's real address IS present in
+ *      MISSION_ORG's Is_MP row now that §2 is loaded; this function must
+ *      never read it).
+ * It is also NOT wired to a trigger — removed from HSPSEM_TRIGGER_SCHEDULE
+ * in HSPSEM_Setup.gs. Re-enable deliberately: flip AMR_DISABLED to false,
+ * restore amr_collectApMpRecipients()'s real body below, and add the
+ * trigger row back in HSPSEM_Setup.gs.
  */
+
+var AMR_DISABLED = true;
 
 // ─── MAIN ENTRY POINT ────────────────────────────────────────────────────────
 
 function runAgentMissionReport() {
+  if (AMR_DISABLED) {
+    Logger.log('AgentMissionReport: DISABLED (AMR_DISABLED = true) — no report generated, no recipients read. See file header.');
+    return;
+  }
+
   var status = 'SUCCESS';
   var notes  = [];
 
@@ -293,6 +315,15 @@ function amr_loadScores(activeOrg) {
 }
 
 function amr_collectApMpRecipients(missionOrg) {
+  // HARD-DISABLED (2026-08-29, roster-load lockdown) — see file header
+  // AMR_DISABLED. runAgentMissionReport() already returns before calling
+  // this, but this function returns [] unconditionally too, independent of
+  // that guard: a direct/manual call must still gather zero recipients,
+  // even though MISSION_ORG's Is_MP row now holds the President's real
+  // address. Restore the real body below (behind this comment block) when
+  // deliberately re-enabling this agent.
+  return [];
+  /* eslint-disable no-unreachable */
   var emails = {};
   missionOrg.forEach(function(row) {
     var isLeader = String(row['Is_AP']).toUpperCase() === 'TRUE' || String(row['Is_MP']).toUpperCase() === 'TRUE';

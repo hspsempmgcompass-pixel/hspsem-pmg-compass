@@ -1,0 +1,2 @@
+La Paz / La Paz / La Paz : 3 missionaries -> ['Crane, Jace Ryan (SA)', 'Ortega Rosales, Jose Samuel (SA)', 'Wolff, Carsen Mathew (SA)']
+Palermo / William Hall / William Hall : 3 missionaries -> ['Munguia Rosas, Angie Mariel (TR)', 'Castellanos Fuentes, Génesis María (JC)', 'Viera Mesa, Belkis Carolina (JC)']

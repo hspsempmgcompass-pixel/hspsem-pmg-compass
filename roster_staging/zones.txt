@@ -1,0 +1,12 @@
+El Carmen
+La Ceiba
+La Paz
+Miramar
+Olanchito
+Palermo
+Planeta
+Progreso
+Santa Rita
+Satélite
+
+JS: var HSPSEM_ZONES = ["El Carmen", "La Ceiba", "La Paz", "Miramar", "Olanchito", "Palermo", "Planeta", "Progreso", "Santa Rita", "Satélite"];
