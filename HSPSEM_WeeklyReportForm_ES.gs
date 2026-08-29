@@ -23,14 +23,16 @@
  * with config/AREAS.csv and with HspsemData.gs's HSPSEM_AREAS_ROWS — all three
  * must match (same pattern CCSM used for its ZONES/CCSM_ZONES pair).
  *
- * PER-ZONE SECTION LOOKUP: grouped via findRowSection_() below, which
+ * PER-ZONE SECTION LOOKUP: grouped via areaChoicesForZone_() below, which
  * resolves the 'Zone'/'Area' column positions by NAME once (into a map),
  * then groups rows into per-zone sections — never scattered
- * headers.indexOf() calls. (Note: no function literally named
- * findRowSection() exists anywhere in the CCSM reference repo this was
- * forked from — checked every .gs file. This is a fresh implementation
- * built to the same-spirit rule name-based lookup, never positional
- * indexOf(); verify it matches what you have in mind.)
+ * headers.indexOf() calls. NOT named findRowSection() on purpose: that
+ * name isn't a CCSM pattern at all — it's a Provo main-repo incident
+ * (docs/AgentValidation.gs was hand-edited to call a `findRowSection`
+ * helper that was never defined, crashing every form submission; see
+ * PMG-Compass's tests/gs/test_validation_sections.js, which now asserts
+ * that file must never call it again). Named this helper something
+ * unambiguous instead so it can't be confused with that bug.
  *
  * HOW TO USE
  *   1. Go to https://script.google.com  ->  New project.
@@ -64,7 +66,7 @@ var AREAS_ROWS = []; // TODO(roster): paste rows from config/AREAS.csv here
 // Resolves 'Zone'/'Area' column positions by NAME once, then groups
 // AREAS_ROWS into per-zone sections: { zoneName: [areaName, ...] }.
 // Never call headers.indexOf() anywhere else in this file — go through
-// this map (or findRowSection_() below) instead.
+// this map (or areaChoicesForZone_() below) instead.
 function buildZoneSections_() {
   var col = {};
   AREAS_HEADERS.forEach(function(h, i) { col[h] = i; });
@@ -81,7 +83,7 @@ function buildZoneSections_() {
 }
 
 // Returns the area list ("section") for a single zone name.
-function findRowSection_(zoneName) {
+function areaChoicesForZone_(zoneName) {
   return buildZoneSections_().sections[zoneName] || [];
 }
 
@@ -160,10 +162,10 @@ function buildWeeklyReportFormES() {
     setMeta_(pageBreak, zone, null);
 
     // Area dropdown for this zone — choices are that zone's section
-    // (findRowSection_), never a positional headers.indexOf() lookup.
+    // (areaChoicesForZone_), never a positional headers.indexOf() lookup.
     var areaItem = form.addListItem();
     setMeta_(areaItem, '¿En qué área sirve?', 'El área en la que usted sirve. Seleccione su área cada vez que envíe el informe semanal.');
-    areaItem.setChoiceValues(findRowSection_(zone));
+    areaItem.setChoiceValues(areaChoicesForZone_(zone));
     areaItem.setRequired(true);
 
     addIntroQuestions_(form);

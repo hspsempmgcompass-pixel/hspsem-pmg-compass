@@ -41,7 +41,7 @@
 // AREAS — HSPSE zone/area roster, sourced from config/AREAS.csv (Zone,Area
 // columns). NOT YET POPULATED (see file header TODO). Replaces the old
 // HSPSEM_ZONES map — group into per-zone sections via the same
-// findRowSection_()-style lookup the form builders use (resolve columns by
+// areaChoicesForZone_()-style lookup the form builders use (resolve columns by
 // name once, never headers.indexOf()).
 // ==================================================================
 var HSPSEM_AREAS_HEADERS = ['Zone', 'Area'];
