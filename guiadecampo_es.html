@@ -378,8 +378,8 @@
   /* Form URLs get filled in once the Google Forms are created.
      Replace these two strings, or set them from a query param during rollout. */
   var FORMS = {
-    nightly: "",   // TODO: URL del Formulario Nocturno (live/published)
-    weekly:  ""    // TODO: URL del Formulario Semanal (live/published)
+    nightly: "https://docs.google.com/forms/d/e/1FAIpQLScrX2jAsOwvuu_FFN8irQebv22L7UTSLLa4bXF2vq9xttF5Kw/viewform",
+    weekly:  "https://docs.google.com/forms/d/e/1FAIpQLSc22UrYstUeTyoKBeWoITv_NiYUokV5U_8MSsmWsKJ-OBIQbQ/viewform"
   };
   document.querySelectorAll('.form-btn[data-form]').forEach(function(btn){
     var url = FORMS[btn.dataset.form];
