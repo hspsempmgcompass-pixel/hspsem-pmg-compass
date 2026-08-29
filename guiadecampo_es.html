@@ -62,10 +62,13 @@
     }
 
     /* ---------- form buttons ---------- */
-    .form-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;}
+    .form-links{
+      display:flex;gap:9px;justify-content:center;flex-wrap:wrap;
+      margin:22px auto 0;max-width:520px;
+    }
     .form-btn{
-      display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:8px;
-      font-family:var(--sora);font-size:12.5px;font-weight:600;letter-spacing:0.04em;
+      display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;
+      font-family:var(--sora);font-size:12px;font-weight:600;letter-spacing:0.03em;
       text-transform:uppercase;text-decoration:none;transition:transform .12s,background .15s,box-shadow .15s;
     }
     .form-btn:active{transform:scale(0.97);}
@@ -205,15 +208,17 @@
   <div class="form-links">
     <a href="#" class="form-btn primary" data-form="nightly">Formulario Nocturno</a>
     <a href="#" class="form-btn ghost" data-form="weekly">Formulario Semanal</a>
+    <a href="#" class="form-btn ghost" data-form="qa">Preguntas y Sugerencias</a>
+    <a href="#" class="form-btn ghost" data-form="miracles">Milagros</a>
   </div>
 </header>
 
 <main>
 
   <div class="callout">
-    <span class="lead">Guarda esta página en tu teléfono</span>
-    En Chrome o Safari, abre el menú y elige <em>“Agregar a la pantalla de inicio”</em>.
-    Ábrela cada noche mientras llenas el formulario.
+    <span class="lead">Guarde esta página en su teléfono</span>
+    En Chrome o Safari, abra el menú y elija <em>“Agregar a la pantalla de inicio”</em>.
+    Ábrala cada noche mientras llena el formulario.
   </div>
 
   <details class="toc" open>
@@ -241,20 +246,21 @@
     <div class="section-header">
       <svg class="sect-mark" aria-hidden="true"><use href="#compass"/></svg>
       <h2>Formulario Nocturno</h2>
-      <span class="count">12 indicadores</span>
+      <span class="count">12 preguntas</span>
     </div>
 
     <div class="callout">
       <span class="lead">Cada noche, antes de dormir</span>
-      12 preguntas — toma de 3 a 5 minutos. Escribe <strong>0</strong> cuando no hiciste
-      algo; nunca dejes un campo en blanco. Un 0 también comunica algo al liderazgo.
+      Toma de 3 a 5 minutos. El formulario primero le pide su <strong>zona</strong> y luego su
+      <strong>área</strong>; selecciónelas cada vez. Escriba <strong>0</strong> cuando no hizo
+      algo; nunca deje un campo en blanco — un 0 también comunica algo al liderazgo.
     </div>
 
     <div class="callout alt">
       <span class="lead">La cadena de contacto</span>
       Cada lección cuenta también como conversación significativa, contacto e intento de
       contacto. Por eso el número de lecciones nunca debe ser mayor que el de conversaciones
-      significativas. Di siempre <strong>“amigo”</strong>, nunca “investigador”.
+      significativas. Diga siempre <strong>“amigo”</strong>, nunca “investigador”.
     </div>
 
     <div class="term-card" id="new_people_found">
@@ -368,9 +374,12 @@
 
     <div class="callout">
       <span class="lead">Una vez por semana</span>
-      Cada indicador se ingresa <strong>dos veces</strong>: el resultado <strong>Real</strong>
-      de la semana pasada y la <strong>Meta</strong> que fijó para la próxima semana durante
-      la planificación semanal. Use los mismos números de la aplicación Predicad Mi Evangelio.
+      Llénelo durante o después de su planificación semanal. Primero le pregunta la fecha, si
+      <strong>recibió una llamada de sus líderes</strong> y si <strong>tuvo la reunión de
+      coordinación semanal</strong> (responda Sí o No). Luego, cada indicador se ingresa
+      <strong>dos veces</strong>: el resultado <strong>Real</strong> de la semana pasada y la
+      <strong>Meta</strong> que fijó para la próxima semana. Use los mismos números de la
+      aplicación Predicad Mi Evangelio.
     </div>
 
     <div class="callout alt">
@@ -443,25 +452,26 @@
     <div class="section-header">
       <svg class="sect-mark" aria-hidden="true"><use href="#compass"/></svg>
       <h2>Preguntas, sugerencias y milagros</h2>
-      <span class="count">Cuando lo necesites</span>
+      <span class="count">Cuando lo necesite</span>
     </div>
 
     <div class="callout">
       <span class="lead">No son informes diarios</span>
-      Usa estos formularios solo cuando tengas algo que preguntar, proponer o compartir.
+      Use estos formularios solo cuando tenga algo que preguntar, proponer o compartir. También
+      los encuentra como botones en la parte superior de esta página.
     </div>
 
     <div class="action">
       <h3>Preguntas y sugerencias</h3>
-      <p>Haz una pregunta sobre PMG Compass, los formularios o los indicadores y recibe una
-      respuesta por correo. O envía una sugerencia — la presidencia de la misión la lee.</p>
+      <p>Haga una pregunta sobre PMG Compass, los formularios o los indicadores y reciba una
+      respuesta por correo. O envíe una sugerencia para la misión — la presidencia lee cada una.</p>
       <a href="#" class="form-btn primary" data-form="qa">Abrir formulario</a>
     </div>
 
     <div class="action">
       <h3>Milagros</h3>
-      <p>Comparte un milagro o una experiencia que fortaleció tu fe. La presidencia lee cada uno
-      y puede compartirlo con la misión.</p>
+      <p>Comparta un milagro o una experiencia que fortaleció su fe. La presidencia de la misión
+      lee cada uno y puede compartirlo con toda la misión.</p>
       <a href="#" class="form-btn ghost" data-form="miracles">Compartir un milagro</a>
     </div>
   </section>
@@ -474,31 +484,44 @@
     </div>
 
     <div class="faq-item">
+      <div class="q">¿Con qué frecuencia lleno cada formulario?</div>
+      <div class="a">El <strong>Nocturno</strong>, cada noche antes de dormir. El
+      <strong>Semanal</strong>, una vez por semana, durante o después de su planificación
+      semanal. Los de Preguntas y Sugerencias y de Milagros, solo cuando los necesite.</div>
+    </div>
+
+    <div class="faq-item">
       <div class="q">¿Qué hago si no hice nada en una categoría hoy?</div>
-      <div class="a">Escribe <strong>0</strong>. Es mejor registrar 0 que dejar el campo en
+      <div class="a">Escriba <strong>0</strong>. Es mejor registrar 0 que dejar el campo en
       blanco. Los datos incompletos son más difíciles de interpretar que los ceros, y un 0
-      consistente comunica algo importante al liderazgo.</div>
+      constante comunica algo importante al liderazgo.</div>
     </div>
 
     <div class="faq-item">
       <div class="q">¿Puedo contar el mismo esfuerzo en varias categorías?</div>
-      <div class="a">Sí, cuando forma parte de la cadena de contacto. Si enseñaste una lección,
-      esa lección también cuenta como conversación significativa, contacto e intento de
-      contacto. Pero si hablaste con dos personas distintas, son dos intentos de contacto
-      separados.</div>
+      <div class="a">Sí, cuando forma parte de la cadena de contacto. Si enseñó una lección, esa
+      lección también cuenta como conversación significativa, contacto e intento de contacto.
+      Pero si habló con dos personas distintas, son dos intentos de contacto separados.</div>
     </div>
 
     <div class="faq-item">
       <div class="q">¿Qué fecha ingreso si reporto tarde?</div>
       <div class="a">La fecha en que <strong>ocurrieron las actividades</strong>, no la fecha en
-      que llenas el formulario. Si el martes reportas lo del lunes, ingresa el lunes.</div>
+      que llena el formulario. Si el martes reporta lo del lunes, ingrese el lunes.</div>
     </div>
 
     <div class="faq-item">
       <div class="q">¿A quién le llegan estos números?</div>
-      <div class="a">Al presidente de misión y a tus líderes, para reconocer tu esfuerzo y
-      apoyarte mejor. Los números por sí solos no cuentan toda la historia — pero ayudan a que
+      <div class="a">Al presidente de la misión y a sus líderes, para reconocer su esfuerzo y
+      apoyarlo mejor. Los números por sí solos no cuentan toda la historia — pero ayudan a que
       nadie pase desapercibido.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="q">Tengo una pregunta que no está aquí.</div>
+      <div class="a">Use el formulario de <strong>Preguntas y Sugerencias</strong> (botón arriba).
+      Recibirá una respuesta por correo; si el sistema no puede responderla, se la pasa a la
+      presidencia de la misión.</div>
     </div>
   </section>
 
@@ -510,8 +533,8 @@
 </footer>
 
 <script>
-  /* Live published form URLs. qa + miracles are filled once those two forms
-     are built; until then their buttons show a short notice. */
+  /* Live published form URLs. If a value is empty, that button shows a short
+     notice instead of navigating. */
   var FORMS = {
     nightly:  "https://docs.google.com/forms/d/e/1FAIpQLScrX2jAsOwvuu_FFN8irQebv22L7UTSLLa4bXF2vq9xttF5Kw/viewform",
     weekly:   "https://docs.google.com/forms/d/e/1FAIpQLSc22UrYstUeTyoKBeWoITv_NiYUokV5U_8MSsmWsKJ-OBIQbQ/viewform",
@@ -527,7 +550,7 @@
     } else {
       btn.addEventListener('click', function(e){
         e.preventDefault();
-        alert('Este formulario aún no está disponible. Pídeselo a tu líder de zona.');
+        alert('Este formulario aún no está disponible. Pídalo a su líder de zona.');
       });
     }
   });
