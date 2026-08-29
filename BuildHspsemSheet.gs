@@ -28,6 +28,12 @@
 
 function buildHspsemSheet() {
   var ss = SpreadsheetApp.create('COMPASS_HSPSE');
+  // Without this, the spreadsheet inherits the script owner's default
+  // timezone (usually America/Los_Angeles), which changes how Sheets
+  // parses/displays date-like string literals on write — part of why
+  // SYSTEM_START_DATE/TRANSFER_START_DATE never converged in verify (see
+  // hspsemCellsEqual_'s Date branch below for the other half of that fix).
+  ss.setSpreadsheetTimeZone('America/Tegucigalpa');
   HSPSEM_TAB_SPECS.forEach(function(spec) {
     var sh = ss.insertSheet(spec.name);
     if (spec.headers) {
@@ -54,6 +60,7 @@ function buildHspsemSheet() {
 function hspsemPrefillRows_(spec) {
   if (spec.prefill === 'HSPSEM_MISSION_ORG_ROWS') return HSPSEM_MISSION_ORG_ROWS;
   if (spec.prefill === 'HSPSEM_AGENT_CONFIG_ROWS') return HSPSEM_AGENT_CONFIG_ROWS;
+  if (spec.prefill === 'HSPSEM_TRANSFER_SCHEDULE_ROWS') return HSPSEM_TRANSFER_SCHEDULE_ROWS;
   if (spec.name === 'QUESTIONS_CONFIG') return hspsemQuestionsConfigRows_();
   return null;
 }
@@ -91,18 +98,28 @@ function hspsemExpectedState_() {
   return expected;
 }
 
-// Google Sheets auto-parses a plain string literal that LOOKS like a boolean
-// or a number into that typed value when it is written via setValue /
+// Google Sheets auto-parses a plain string literal that LOOKS like a boolean,
+// a number, or a date into that typed value when it is written via setValue /
 // setValues — "TRUE"/"FALSE" become real Booleans, "0.50" becomes the Number
-// 0.5. want[] is always the literal string HspsemData.gs authored; got[] is
-// whatever Sheets actually stored. A naive String(got) !== String(want)
-// never converges here: String(true) is "true", not "TRUE"; String(0.5) is
-// "0.5", not "0.50". This normalizes both sides to what Sheets will actually
-// treat as equivalent, so the verify pass can recognize a correctly-written
-// cell instead of "fixing" it forever.
+// 0.5, and a "YYYY-MM-DD" string (e.g. AGENT_CONFIG's SYSTEM_START_DATE /
+// TRANSFER_START_DATE) becomes a real Date. want[] is always the literal
+// string HspsemData.gs authored; got[] is whatever Sheets actually stored. A
+// naive String(got) !== String(want) never converges here: String(true) is
+// "true", not "TRUE"; String(0.5) is "0.5", not "0.50"; and String(aDate) is
+// a full "Wed Sep 09 2026 00:00:00 GMT..." — nothing like "2026-09-09", so
+// those two cells "fixed" each other every single round and verify never hit
+// 0 fixes. This normalizes each case to what Sheets will actually treat as
+// equivalent, so the verify pass can recognize a correctly-written cell
+// instead of trying to fix it forever.
 function hspsemCellsEqual_(got, want) {
   if (want === 'TRUE' || want === 'FALSE') {
     return String(got).trim().toUpperCase() === want;
+  }
+  if (typeof want === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(want) && got instanceof Date) {
+    var wantDate = new Date(want + 'T00:00:00');
+    return got.getFullYear() === wantDate.getFullYear() &&
+           got.getMonth()    === wantDate.getMonth() &&
+           got.getDate()     === wantDate.getDate();
   }
   if (typeof want === 'string' && /^-?\d+(\.\d+)?$/.test(want)) {
     return Number(got) === Number(want);

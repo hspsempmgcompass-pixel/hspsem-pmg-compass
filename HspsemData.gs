@@ -357,6 +357,51 @@ var HSPSEM_MISSION_ORG_ROWS = [
 ];
 
 // ==================================================================
+// TRANSFER_SCHEDULE — the President's transfer calendar, given 2026-08-29.
+// All 6-week/42-day cycles (verified: every consecutive pair below is
+// exactly 42 days apart). SYSTEM_START_DATE and TRANSFER_START_DATE are
+// both 2026-09-09 (AGENT_CONFIG) — that row is HSPSE's first tracked
+// transfer, but three earlier transfers the mission already ran are
+// included too so HSPSEM_Agent2.gs's a2_loadRealTransferHistory_() has
+// real 'Actual' history to compute Previous/2-Ago boundaries from on day
+// one, instead of falling back to a flat 42-day guess.
+//
+// Status vocabulary is CCSM's real one (not invented — CCSM's own
+// TRANSFER_SCHEDULE row spec ships with prefill: null, no example rows, so
+// there was nothing to copy directly; this is reverse-engineered from how
+// CCSM's own code actually reads/writes the column):
+//   - HSPSEM_Agent2.gs's a2_loadRealTransferHistory_() only counts rows
+//     with Status === 'Actual' (exact string, case-sensitive) as real
+//     history — verified against CCSM_Agent2.gs, byte-identical logic.
+//   - dashboard/app/ingestion/transfer_engine.py's a5-side counterpart
+//     (transfer_apply_service.py) flips the earliest still-'Planned' row to
+//     'Actual' once a transfer actually happens — 'Planned' is CCSM's own
+//     term for a not-yet-started future transfer.
+// Applied here using the session date (2026-08-29) as "today": the three
+// dates already in the past (2026-05-06, 2026-06-17, 2026-07-29) are
+// 'Actual'; 2026-09-09 onward (not yet started) are 'Planned'.
+//
+// Transfer_Number is a plain sequential label (1-11, oldest first) — it is
+// never read by any agent logic (HSPSEM_Agent2.gs keys off Start_Date/
+// Status only) and the dashboard's 12_Traslados.py displays it as opaque
+// text, so there is no "official" church-wide numbering to reverse-engineer
+// or reason to invent one.
+// ==================================================================
+var HSPSEM_TRANSFER_SCHEDULE_ROWS = [
+  ['1',  '2026-05-06', '6', 'Actual'],
+  ['2',  '2026-06-17', '6', 'Actual'],
+  ['3',  '2026-07-29', '6', 'Actual'],
+  ['4',  '2026-09-09', '6', 'Planned'],
+  ['5',  '2026-10-21', '6', 'Planned'],
+  ['6',  '2026-12-02', '6', 'Planned'],
+  ['7',  '2027-01-13', '6', 'Planned'],
+  ['8',  '2027-02-24', '6', 'Planned'],
+  ['9',  '2027-04-07', '6', 'Planned'],
+  ['10', '2027-05-19', '6', 'Planned'],
+  ['11', '2027-06-30', '6', 'Planned']
+];
+
+// ==================================================================
 // TAB_SPECS — one entry per sheet tab the builder creates. Identical shape
 // to CCSM's CCSM_TAB_SPECS; see CcsmData.gs (CCSM repo) for the full
 // per-tab schema-reconciliation notes this was verified against — those
@@ -371,7 +416,7 @@ var HSPSEM_TAB_SPECS = [
   { name: 'SCORE_CONFIG',      headers: null, prefill: null },   // seeded by HSPSEM_AgentScores setup fn
   { name: 'MESSAGE_BANK',      headers: ['Message_ID','Category','Metric','Subcategory','Subject_Line','Body_Text','PMG_Chapter','PMG_Description','Scripture','Scripture_Text','Active'], prefill: null }, // content not yet written
   { name: 'KNOWLEDGE_BASE',    headers: ['ID','Category','Question','Answer','Keywords','Source','DateAdded','UseCount'], prefill: null },
-  { name: 'TRANSFER_SCHEDULE', headers: ['Transfer_Number','Start_Date','Weeks','Status'], prefill: null },
+  { name: 'TRANSFER_SCHEDULE', headers: ['Transfer_Number','Start_Date','Weeks','Status'], prefill: 'HSPSEM_TRANSFER_SCHEDULE_ROWS' },
   { name: 'DAILY_LOG',         headers: null, prefill: null },
   { name: 'LIVE_SNAPSHOT',     headers: null, prefill: null },
   { name: 'WEEKLY_KI',         headers: null, prefill: null },
