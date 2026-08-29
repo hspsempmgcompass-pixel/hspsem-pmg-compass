@@ -6,110 +6,205 @@
   <title>PMG Compass — Guía de Campo — Honduras San Pedro Sula Este</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0d1117; --surface:#161b27; --card:#1e2438; --border:#2a3050;
-      --accent:#e8a838; --accent2:#5b8dee; --accent3:#4ecda4;
-      --text:#dde3f0; --muted:#b0bcd4; --warning-bg:#2a2010;
+      --bg:#090d16; --surface:#0f1521; --card:#121a29; --border:#202b41;
+      --grid:rgba(92,126,216,0.05);
+      --accent:#3f74f0; --accent-lo:#6f9cf9; --accent-deep:#18244c;
+      --text:#e2e8f4; --muted:#8b98b6; --callout-bg:rgba(63,116,240,0.07);
+      --sora:'Sora',system-ui,sans-serif;
+      --body:'IBM Plex Sans',system-ui,sans-serif;
+      --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
-    body{background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;
-      font-weight:300;line-height:1.7;font-size:16px;padding-bottom:64px;}
+    body{
+      background:var(--bg);color:var(--text);font-family:var(--body);
+      font-weight:400;line-height:1.65;font-size:16px;padding-bottom:64px;
+      background-image:
+        linear-gradient(var(--grid) 1px,transparent 1px),
+        linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+      background-size:34px 34px;background-position:center -1px;
+    }
+
+    /* ---------- the mark ---------- */
+    .mark{display:block;}
+    .sect-mark{width:22px;height:22px;flex:0 0 auto;opacity:.9;}
 
     /* ---------- header ---------- */
-    header{background:linear-gradient(135deg,#111827 0%,#1a2035 60%,#0f1c2e 100%);
-      border-bottom:1px solid var(--border);padding:36px 20px 28px;text-align:center;
-      position:relative;overflow:hidden;}
-    header::before{content:'';position:absolute;inset:0;
-      background:radial-gradient(ellipse at 50% 0%,rgba(232,168,56,0.12) 0%,transparent 70%);
-      pointer-events:none;}
-    header .badge{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:0.16em;
-      text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,168,56,0.4);
-      border-radius:100px;padding:4px 13px;margin-bottom:14px;}
-    header h1{font-family:'Fraunces',Georgia,serif;font-weight:700;
-      font-size:clamp(1.6rem,6vw,2.4rem);color:#fff;letter-spacing:-0.01em;}
-    header h1 span{color:var(--accent);}
-    header .mission{margin-top:8px;color:var(--muted);font-size:13.5px;}
+    header{
+      border-bottom:1px solid var(--border);padding:40px 20px 30px;text-align:center;
+      position:relative;overflow:hidden;
+      background:
+        radial-gradient(ellipse 60% 80% at 50% -10%,rgba(63,116,240,0.16),transparent 70%),
+        linear-gradient(180deg,#0c1220,#090d16);
+    }
+    header .mark{width:64px;height:64px;margin:0 auto 16px;}
+    @media (prefers-reduced-motion:no-preference){
+      header .mark{animation:calibrate .95s cubic-bezier(.16,1,.3,1) both;}
+      @keyframes calibrate{from{transform:rotate(-14deg) scale(.9);opacity:0;}
+        to{transform:rotate(0) scale(1);opacity:1;}}
+    }
+    header .eyebrow{
+      font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:0.22em;
+      text-transform:uppercase;color:var(--muted);margin-bottom:12px;
+    }
+    header h1{
+      font-family:var(--sora);font-weight:800;
+      font-size:clamp(1.7rem,7vw,2.5rem);color:#fff;letter-spacing:0.02em;
+      text-transform:uppercase;line-height:1;
+    }
+    header h1 span{color:var(--accent-lo);}
+    header .mission{
+      margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:0.13em;
+      text-transform:uppercase;color:var(--accent-lo);
+    }
 
     /* ---------- form buttons ---------- */
-    .form-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
-    .form-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:9px;
-      font-size:13.5px;font-weight:500;text-decoration:none;transition:transform .12s,opacity .12s;}
+    .form-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;}
+    .form-btn{
+      display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:8px;
+      font-family:var(--sora);font-size:12.5px;font-weight:600;letter-spacing:0.04em;
+      text-transform:uppercase;text-decoration:none;transition:transform .12s,background .15s,box-shadow .15s;
+    }
     .form-btn:active{transform:scale(0.97);}
-    .form-btn.nightly{background:var(--accent);color:#0d1117;}
-    .form-btn.weekly{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+    .form-btn::before{content:'';width:6px;height:6px;border-radius:1px;transform:rotate(45deg);flex:0 0 auto;}
+    .form-btn.primary{background:var(--accent);color:#fff;box-shadow:0 0 0 1px rgba(111,156,249,0.3) inset;}
+    .form-btn.primary::before{background:#fff;}
+    .form-btn.ghost{background:transparent;color:var(--accent-lo);border:1px solid rgba(111,156,249,0.4);}
+    .form-btn.ghost::before{background:var(--accent-lo);}
+    .form-btn:focus-visible{outline:2px solid var(--accent-lo);outline-offset:2px;}
 
     /* ---------- layout ---------- */
-    main{max-width:760px;margin:0 auto;padding:28px 18px;}
+    main{max-width:760px;margin:0 auto;padding:30px 18px;}
 
     /* ---------- table of contents ---------- */
     .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;
-      padding:6px 8px;margin-bottom:32px;}
-    .toc summary{font-family:'Fraunces',serif;font-size:13px;font-weight:600;color:var(--accent);
-      text-transform:uppercase;letter-spacing:0.1em;padding:12px 12px;cursor:pointer;
-      list-style:none;}
+      padding:6px 8px;margin-bottom:34px;}
+    .toc summary{
+      font-family:var(--sora);font-size:11.5px;font-weight:700;color:var(--accent-lo);
+      text-transform:uppercase;letter-spacing:0.16em;padding:13px 12px;cursor:pointer;list-style:none;
+    }
     .toc summary::-webkit-details-marker{display:none;}
-    .toc summary::after{content:'▾';float:right;color:var(--muted);}
-    .toc[open] summary::after{content:'▴';}
-    .toc a{display:block;font-size:13.5px;color:var(--muted);text-decoration:none;
-      padding:8px 12px;border-radius:7px;border-left:2px solid transparent;}
-    .toc a:active{background:rgba(232,168,56,0.08);}
-    .toc a.sub{padding-left:24px;font-size:12.5px;}
+    .toc summary::after{content:'+';float:right;color:var(--muted);font-family:var(--mono);}
+    .toc[open] summary::after{content:'\2212';}
+    .toc a{
+      display:block;font-size:13.5px;color:var(--muted);text-decoration:none;
+      padding:8px 12px;border-radius:6px;
+    }
+    .toc a:hover{color:var(--text);}
+    .toc a.grp{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;
+      text-transform:uppercase;color:var(--accent-lo);margin-top:4px;}
+    .toc a.sub{padding-left:26px;font-size:12.5px;position:relative;}
+    .toc a.sub::before{content:attr(data-n);position:absolute;left:10px;font-family:var(--mono);
+      font-size:10px;color:var(--border);}
+    .toc a:focus-visible{outline:2px solid var(--accent-lo);outline-offset:-2px;}
 
     /* ---------- sections ---------- */
-    section{margin-bottom:44px;scroll-margin-top:16px;}
-    .section-header{display:flex;align-items:center;gap:11px;margin-bottom:18px;
-      padding-bottom:12px;border-bottom:1px solid var(--border);}
-    .section-header .icon{width:34px;height:34px;flex:0 0 auto;background:rgba(232,168,56,0.15);
-      border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;}
-    .section-header h2{font-family:'Fraunces',serif;font-size:1.32rem;font-weight:600;color:#fff;}
+    section{margin-bottom:46px;scroll-margin-top:16px;}
+    .section-header{
+      display:flex;align-items:center;gap:12px;margin-bottom:20px;
+      padding-top:14px;border-top:1px solid var(--border);
+    }
+    .section-header h2{
+      font-family:var(--sora);font-size:1.05rem;font-weight:700;color:#fff;
+      text-transform:uppercase;letter-spacing:0.08em;flex:1;
+    }
+    .section-header .count{
+      font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+      color:var(--muted);border:1px solid var(--border);border-radius:100px;padding:3px 10px;
+      white-space:nowrap;
+    }
 
     /* ---------- metric cards ---------- */
-    .term-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
-      padding:16px 18px;margin-bottom:13px;scroll-margin-top:16px;}
-    .term-card .term-name{font-family:'Fraunces',serif;font-size:1.02rem;font-weight:600;
-      color:var(--accent);margin-bottom:3px;}
-    .term-card .term-key{font-size:10.5px;color:var(--muted);font-family:ui-monospace,Consolas,monospace;
-      letter-spacing:0.03em;margin-bottom:9px;opacity:.75;}
-    .term-card p{font-size:14.5px;color:var(--text);font-weight:300;}
-    .term-card.weekly .term-name{color:var(--accent2);}
-    .term-card .choices{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap;}
-    .term-card .choices span{font-size:12px;background:rgba(91,141,238,0.14);color:var(--accent2);
-      border:1px solid rgba(91,141,238,0.3);border-radius:6px;padding:2px 9px;}
-    .term-card .draft{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.05em;
-      text-transform:uppercase;color:var(--accent3);border:1px solid rgba(78,205,164,.4);
-      border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle;}
+    .term-card{
+      background:var(--card);border:1px solid var(--border);border-radius:14px;
+      padding:16px 18px;margin-bottom:12px;scroll-margin-top:16px;
+    }
+    .term-card .term-name{
+      font-family:var(--sora);font-size:1.0rem;font-weight:600;color:var(--accent-lo);
+      margin-bottom:5px;line-height:1.3;
+    }
+    .term-card .term-key{
+      font-family:var(--mono);font-size:10.5px;color:var(--muted);
+      letter-spacing:0.02em;margin-bottom:10px;
+    }
+    .term-card .term-key b{color:var(--accent);font-weight:500;}
+    .term-card p{font-size:14.5px;color:var(--text);}
+    .term-card.wk{border-left:2px solid var(--accent);}
+    .term-card.wk .term-name{color:#a9c4fc;}
+    .term-card .choices{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+    .term-card .choices span{
+      font-family:var(--mono);font-size:11px;background:rgba(63,116,240,0.12);color:var(--accent-lo);
+      border:1px solid rgba(63,116,240,0.32);border-radius:5px;padding:3px 9px;
+    }
 
     /* ---------- callouts ---------- */
-    .callout{background:var(--warning-bg);border-left:3px solid var(--accent);
-      border-radius:0 8px 8px 0;padding:13px 16px;margin:18px 0;font-size:13.5px;color:var(--text);}
-    .callout .lead{color:var(--accent);display:block;margin-bottom:3px;font-weight:600;}
-    .callout strong{color:var(--accent);font-weight:600;}
-    .callout.blue{background:rgba(91,141,238,0.1);border-left-color:var(--accent2);}
-    .callout.blue .lead,.callout.blue strong{color:var(--accent2);}
+    .callout{
+      background:var(--callout-bg);border:1px solid var(--border);border-left:2px solid var(--accent);
+      border-radius:0 10px 10px 0;padding:14px 16px;margin:18px 0;font-size:13.5px;color:var(--text);
+    }
+    .callout .lead{
+      font-family:var(--sora);font-weight:700;font-size:11px;letter-spacing:0.1em;
+      text-transform:uppercase;color:var(--accent-lo);display:block;margin-bottom:5px;
+    }
+    .callout strong{color:#fff;font-weight:600;}
+    .callout.alt{border-left-color:var(--accent-lo);}
+
+    /* ---------- action cards (forms) ---------- */
+    .action{
+      background:var(--card);border:1px solid var(--border);border-radius:14px;
+      padding:18px;margin-bottom:12px;
+    }
+    .action h3{font-family:var(--sora);font-size:0.98rem;font-weight:600;color:#fff;margin-bottom:5px;}
+    .action p{font-size:13.5px;color:var(--muted);margin-bottom:14px;}
+    .action .form-btn{width:100%;justify-content:center;}
 
     /* ---------- faq ---------- */
-    .faq-item{margin-bottom:18px;}
-    .faq-item .q{font-weight:500;color:var(--accent2);margin-bottom:4px;font-size:14.5px;}
-    .faq-item .a{font-size:14px;color:var(--muted);font-weight:300;}
+    .faq-item{margin-bottom:18px;padding-left:14px;border-left:1px solid var(--border);}
+    .faq-item .q{font-family:var(--sora);font-weight:600;color:var(--accent-lo);margin-bottom:4px;font-size:14px;}
+    .faq-item .a{font-size:13.5px;color:var(--muted);}
 
-    footer{text-align:center;padding:22px 18px;color:var(--muted);font-size:11.5px;
-      border-top:1px solid var(--border);max-width:760px;margin:0 auto;}
+    footer{
+      text-align:center;padding:24px 18px;color:var(--muted);font-size:10.5px;
+      font-family:var(--mono);letter-spacing:0.06em;
+      border-top:1px solid var(--border);max-width:760px;margin:0 auto;
+    }
 
-    a{color:var(--accent2);}
+    a{color:var(--accent-lo);}
   </style>
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="compass" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#9dbcfc"/><stop offset=".55" stop-color="#3f74f0"/><stop offset="1" stop-color="#2a53c2"/>
+      </linearGradient>
+      <linearGradient id="ndlTop" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cfe0ff"/>
+      </linearGradient>
+      <linearGradient id="ndlBot" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#33509c"/><stop offset="1" stop-color="#1a2b57"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="33" fill="none" stroke="url(#ring)" stroke-width="7.5" stroke-linecap="round"/>
+    <path d="M50 12 L61 51 L50 56 L39 51 Z" fill="url(#ndlTop)"/>
+    <path d="M39 51 L50 56 L61 51 L50 88 Z" fill="url(#ndlBot)"/>
+    <path d="M50 12 V88 M39 51 H61" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+  </symbol>
+</svg>
+
 <header>
-  <div class="badge">Guía de Referencia para Misioneros</div>
+  <div class="eyebrow">Guía de Campo</div>
+  <svg class="mark" aria-label="PMG Compass"><use href="#compass"/></svg>
   <h1>PMG <span>Compass</span></h1>
-  <div class="mission">Misión Honduras San Pedro Sula Este</div>
+  <div class="mission">HSPSE &middot; Honduras San Pedro Sula Este</div>
   <div class="form-links">
-    <a href="#" class="form-btn nightly" data-form="nightly">📋 Formulario Nocturno</a>
-    <a href="#" class="form-btn weekly" data-form="weekly">📅 Formulario Semanal</a>
+    <a href="#" class="form-btn primary" data-form="nightly">Formulario Nocturno</a>
+    <a href="#" class="form-btn ghost" data-form="weekly">Formulario Semanal</a>
   </div>
 </header>
 
@@ -123,26 +218,31 @@
 
   <details class="toc" open>
     <summary>Contenido</summary>
-    <a href="#nocturno">📋 Formulario Nocturno</a>
-    <a class="sub" href="#new_people_found">Nuevas personas encontradas</a>
-    <a class="sub" href="#contacts_attempted">Intentos de contacto</a>
-    <a class="sub" href="#contacts_made">Contactos con amigos</a>
-    <a class="sub" href="#meaningful_conversations">Conversaciones significativas</a>
-    <a class="sub" href="#friend_lessons">Lecciones con amigos</a>
-    <a class="sub" href="#lessons_member_present">Lecciones con un miembro presente</a>
-    <a class="sub" href="#rc_lessons">Lecciones con conversos recientes</a>
-    <a class="sub" href="#church_invites">Invitaciones a la Iglesia</a>
-    <a class="sub" href="#bom_shared">Libros de Mormón entregados</a>
-    <a class="sub" href="#effort">Esfuerzo en el altar del sacrificio</a>
-    <a class="sub" href="#baptismal_invitations">Invitaciones al bautismo</a>
-    <a class="sub" href="#baptismal_calendars">Calendarios bautismales</a>
-    <a href="#semanal">📅 Formulario Semanal</a>
-    <a href="#faq">❓ Preguntas Frecuentes</a>
+    <a class="grp" href="#nocturno">Formulario Nocturno</a>
+    <a class="sub" data-n="01" href="#new_people_found">Nuevas personas encontradas</a>
+    <a class="sub" data-n="02" href="#contacts_attempted">Intentos de contacto</a>
+    <a class="sub" data-n="03" href="#contacts_made">Contactos con amigos</a>
+    <a class="sub" data-n="04" href="#meaningful_conversations">Conversaciones significativas</a>
+    <a class="sub" data-n="05" href="#friend_lessons">Lecciones con amigos</a>
+    <a class="sub" data-n="06" href="#lessons_member_present">Lecciones con un miembro presente</a>
+    <a class="sub" data-n="07" href="#rc_lessons">Lecciones con conversos recientes</a>
+    <a class="sub" data-n="08" href="#church_invites">Invitaciones a la Iglesia</a>
+    <a class="sub" data-n="09" href="#bom_shared">Libros de Mormón entregados</a>
+    <a class="sub" data-n="10" href="#effort">Esfuerzo en el altar del sacrificio</a>
+    <a class="sub" data-n="11" href="#baptismal_invitations">Invitaciones al bautismo</a>
+    <a class="sub" data-n="12" href="#baptismal_calendars">Calendarios bautismales</a>
+    <a class="grp" href="#semanal">Formulario Semanal</a>
+    <a class="grp" href="#mas">Preguntas, sugerencias y milagros</a>
+    <a class="grp" href="#faq">Preguntas frecuentes</a>
   </details>
 
   <!-- ============ NIGHTLY ============ -->
   <section id="nocturno">
-    <div class="section-header"><div class="icon">📋</div><h2>Formulario Nocturno</h2></div>
+    <div class="section-header">
+      <svg class="sect-mark" aria-hidden="true"><use href="#compass"/></svg>
+      <h2>Formulario Nocturno</h2>
+      <span class="count">12 indicadores</span>
+    </div>
 
     <div class="callout">
       <span class="lead">Cada noche, antes de dormir</span>
@@ -150,7 +250,7 @@
       algo; nunca dejes un campo en blanco. Un 0 también comunica algo al liderazgo.
     </div>
 
-    <div class="callout blue">
+    <div class="callout alt">
       <span class="lead">La cadena de contacto</span>
       Cada lección cuenta también como conversación significativa, contacto e intento de
       contacto. Por eso el número de lecciones nunca debe ser mayor que el de conversaciones
@@ -159,7 +259,7 @@
 
     <div class="term-card" id="new_people_found">
       <div class="term-name">Nuevas personas encontradas</div>
-      <div class="term-key">new_people_found</div>
+      <div class="term-key"><b>01</b> · new_people_found</div>
       <p>Cada persona (que no haya sido bautizada) que haya recibido una lección durante la
       semana, que no haya sido enseñada en los últimos tres meses y que haya aceptado una cita
       específica para regresar. Normalmente, una lección incluye una oración (cuando sea
@@ -168,7 +268,7 @@
 
     <div class="term-card" id="contacts_attempted">
       <div class="term-name">Intentos de contacto con amigos</div>
-      <div class="term-key">contacts_attempted</div>
+      <div class="term-key"><b>02</b> · contacts_attempted</div>
       <p>Cuente cada intento de contactar a un amigo hoy, independientemente de si la persona
       respondió o no. Si nadie respondió, igualmente cuenta aquí. Incluye los intentos
       realizados en cualquier lugar — en la calle, en lugares públicos, por referencia o de
@@ -177,7 +277,7 @@
 
     <div class="term-card" id="contacts_made">
       <div class="term-name">Contactos con amigos</div>
-      <div class="term-key">contacts_made</div>
+      <div class="term-key"><b>03</b> · contacts_made</div>
       <p>Cuente cada ocasión en la que una persona respondió y usted logró establecer contacto.
       Todo contacto también cuenta como un intento de contacto. Incluye los contactos hechos en
       cualquier lugar — en la calle, en lugares públicos o por referencia.</p>
@@ -185,7 +285,7 @@
 
     <div class="term-card" id="meaningful_conversations">
       <div class="term-name">Conversaciones significativas con amigos</div>
-      <div class="term-key">meaningful_conversations</div>
+      <div class="term-key"><b>04</b> · meaningful_conversations</div>
       <p>Una conversación con un amigo que duró más de tres minutos e incluyó un principio o
       mensaje del evangelio. Sea honesto consigo mismo: ¿fue realmente una conversación
       significativa? Si la respuesta es sí, también cuenta como un contacto y un intento de
@@ -194,7 +294,7 @@
 
     <div class="term-card" id="friend_lessons">
       <div class="term-name">Lecciones con amigos</div>
-      <div class="term-key">friend_lessons</div>
+      <div class="term-key"><b>05</b> · friend_lessons</div>
       <p>Una visita con un amigo en la que usted enseñó un principio del evangelio y extendió
       una invitación. Cada lección también cuenta como una conversación significativa, un
       contacto y un intento de contacto. El número de lecciones nunca debe ser mayor que el de
@@ -203,7 +303,7 @@
 
     <div class="term-card" id="lessons_member_present">
       <div class="term-name">Lecciones con un miembro presente</div>
-      <div class="term-key">lessons_member_present</div>
+      <div class="term-key"><b>06</b> · lessons_member_present</div>
       <p>La cantidad de lecciones dadas hoy en las que estuvieron presentes tanto un amigo como
       un miembro de la Iglesia. No corresponde al total de lecciones, sino únicamente a
       aquellas en las que también participó un miembro.</p>
@@ -211,14 +311,14 @@
 
     <div class="term-card" id="rc_lessons">
       <div class="term-name">Lecciones con conversos recientes</div>
-      <div class="term-key">rc_lessons</div>
+      <div class="term-key"><b>07</b> · rc_lessons</div>
       <p>Las lecciones dadas hoy únicamente a conversos recientes. No incluya amigos en este
       conteo; es exclusivamente para conversos recientes.</p>
     </div>
 
     <div class="term-card" id="church_invites">
       <div class="term-name">Invitaciones a la Iglesia extendidas</div>
-      <div class="term-key">church_invites</div>
+      <div class="term-key"><b>08</b> · church_invites</div>
       <p>La cantidad de amigos a quienes usted invitó personalmente a asistir a una reunión o
       actividad de la Iglesia hoy. Cuente cada invitación, independientemente de si fue
       aceptada o rechazada.</p>
@@ -226,14 +326,14 @@
 
     <div class="term-card" id="bom_shared">
       <div class="term-name">Copias del Libro de Mormón entregadas</div>
-      <div class="term-key">bom_shared</div>
+      <div class="term-key"><b>09</b> · bom_shared</div>
       <p>La cantidad de copias del Libro de Mormón que entregó hoy a amigos, ya sean físicos o
       digitales. Cuente cada persona que recibió uno.</p>
     </div>
 
     <div class="term-card" id="effort">
       <div class="term-name">¿Dio todo, la mayor parte o algo de esfuerzo en el altar del sacrificio hoy?</div>
-      <div class="term-key">effort</div>
+      <div class="term-key"><b>10</b> · effort</div>
       <p>Una autoevaluación personal del esfuerzo que usted dio hoy. Sea honesto: esto es entre
       usted y el Señor. Seleccione <strong>Todo</strong> si dio todo lo que tenía sin reservas,
       <strong>La mayor parte</strong> si trabajó diligentemente pero sintió que pudo haber dado
@@ -244,14 +344,14 @@
 
     <div class="term-card" id="baptismal_invitations">
       <div class="term-name">Invitaciones al bautismo extendidas</div>
-      <div class="term-key">baptismal_invitations</div>
+      <div class="term-key"><b>11</b> · baptismal_invitations</div>
       <p>La cantidad de personas a quienes invitó claramente a bautizarse hoy. Cuente cada
       invitación, independientemente de si fue aceptada, rechazada o pospuesta.</p>
     </div>
 
     <div class="term-card" id="baptismal_calendars">
       <div class="term-name">Calendarios bautismales entregados</div>
-      <div class="term-key">baptismal_calendars</div>
+      <div class="term-key"><b>12</b> · baptismal_calendars</div>
       <p>La cantidad de calendarios bautismales o planes de preparación para el bautismo que
       entregó a personas que se están preparando para bautizarse. Cuente cada persona que
       recibió uno.</p>
@@ -260,7 +360,11 @@
 
   <!-- ============ WEEKLY ============ -->
   <section id="semanal">
-    <div class="section-header"><div class="icon">📅</div><h2>Formulario Semanal</h2></div>
+    <div class="section-header">
+      <svg class="sect-mark" aria-hidden="true"><use href="#compass"/></svg>
+      <h2>Formulario Semanal</h2>
+      <span class="count">8 indicadores · Real / Meta</span>
+    </div>
 
     <div class="callout">
       <span class="lead">Una vez por semana</span>
@@ -269,39 +373,39 @@
       la planificación semanal. Use los mismos números de la aplicación Predicad Mi Evangelio.
     </div>
 
-    <div class="callout blue">
+    <div class="callout alt">
       <span class="lead">Regla de “Bautizados y confirmados”</span>
       Si alguien fue bautizado la semana pasada pero confirmado esta semana, cuéntelo esta
       semana — ambas cosas deben haber ocurrido para contarlo.
     </div>
 
-    <div class="term-card weekly" id="ki_pew">
+    <div class="term-card wk" id="ki_pew">
       <div class="term-name">Amigos en la reunión sacramental</div>
       <div class="term-key">ki_pew</div>
       <p>Amigos que asistieron a la reunión sacramental esta semana.</p>
     </div>
 
-    <div class="term-card weekly" id="ki_baptismal_date">
+    <div class="term-card wk" id="ki_baptismal_date">
       <div class="term-name">Amigos con fecha bautismal</div>
       <div class="term-key">ki_baptismal_date</div>
       <p>Amigos que tienen una fecha de bautismo fijada en este momento. Es el total vigente,
       no solo las fechas nuevas de esta semana.</p>
     </div>
 
-    <div class="term-card weekly" id="ki_baptized_confirmed">
+    <div class="term-card wk" id="ki_baptized_confirmed">
       <div class="term-name">Bautizados y confirmados</div>
       <div class="term-key">ki_baptized_confirmed</div>
       <p>Amigos que fueron bautizados <strong>y</strong> confirmados esta semana. Ambas
       ordenanzas deben haber ocurrido.</p>
     </div>
 
-    <div class="term-card weekly" id="ki_rc_at_church">
+    <div class="term-card wk" id="ki_rc_at_church">
       <div class="term-name">Conversos recientes en la Iglesia</div>
       <div class="term-key">ki_rc_at_church</div>
       <p>Conversos recientes que asistieron a la reunión sacramental esta semana.</p>
     </div>
 
-    <div class="term-card weekly" id="ki_rc_could_attend">
+    <div class="term-card wk" id="ki_rc_could_attend">
       <div class="term-name">Conversos recientes que podían asistir</div>
       <div class="term-key">ki_rc_could_attend</div>
       <p>El número total de conversos recientes en su área esta semana.
@@ -311,21 +415,21 @@
       “Conversos recientes en la Iglesia” para calcular el porcentaje de asistencia.</p>
     </div>
 
-    <div class="term-card weekly" id="ki_new_people_found">
+    <div class="term-card wk" id="ki_new_people_found">
       <div class="term-name">Nuevas personas encontradas</div>
       <div class="term-key">ki_new_people_found</div>
       <p>El total de nuevas personas encontradas durante toda la semana, según la norma de
       Predicad Mi Evangelio.</p>
     </div>
 
-    <div class="term-card weekly" id="ki_first_week_church">
+    <div class="term-card wk" id="ki_first_week_church">
       <div class="term-name">Amigos en la Iglesia durante su primera semana de enseñanza</div>
       <div class="term-key">ki_first_week_church</div>
       <p>Amigos que asistieron a la reunión sacramental durante la misma semana en que
       recibieron su primera lección.</p>
     </div>
 
-    <div class="term-card weekly" id="ki_member_lessons">
+    <div class="term-card wk" id="ki_member_lessons">
       <div class="term-name">Lecciones con miembros participando</div>
       <div class="term-key">ki_member_lessons</div>
       <p>El número de lecciones esta semana en las que un miembro de la Iglesia
@@ -334,9 +438,40 @@
     </div>
   </section>
 
+  <!-- ============ MÁS FORMULARIOS ============ -->
+  <section id="mas">
+    <div class="section-header">
+      <svg class="sect-mark" aria-hidden="true"><use href="#compass"/></svg>
+      <h2>Preguntas, sugerencias y milagros</h2>
+      <span class="count">Cuando lo necesites</span>
+    </div>
+
+    <div class="callout">
+      <span class="lead">No son informes diarios</span>
+      Usa estos formularios solo cuando tengas algo que preguntar, proponer o compartir.
+    </div>
+
+    <div class="action">
+      <h3>Preguntas y sugerencias</h3>
+      <p>Haz una pregunta sobre PMG Compass, los formularios o los indicadores y recibe una
+      respuesta por correo. O envía una sugerencia — la presidencia de la misión la lee.</p>
+      <a href="#" class="form-btn primary" data-form="qa">Abrir formulario</a>
+    </div>
+
+    <div class="action">
+      <h3>Milagros</h3>
+      <p>Comparte un milagro o una experiencia que fortaleció tu fe. La presidencia lee cada uno
+      y puede compartirlo con la misión.</p>
+      <a href="#" class="form-btn ghost" data-form="miracles">Compartir un milagro</a>
+    </div>
+  </section>
+
   <!-- ============ FAQ ============ -->
   <section id="faq">
-    <div class="section-header"><div class="icon">❓</div><h2>Preguntas Frecuentes</h2></div>
+    <div class="section-header">
+      <svg class="sect-mark" aria-hidden="true"><use href="#compass"/></svg>
+      <h2>Preguntas frecuentes</h2>
+    </div>
 
     <div class="faq-item">
       <div class="q">¿Qué hago si no hice nada en una categoría hoy?</div>
@@ -371,15 +506,17 @@
 
 <footer>
   PMG Compass &middot; Misión Honduras San Pedro Sula Este &middot; Español<br>
-  Guía de campo — borrador v1, 29 de agosto de 2026
+  Guía de campo — 29 de agosto de 2026
 </footer>
 
 <script>
-  /* Form URLs get filled in once the Google Forms are created.
-     Replace these two strings, or set them from a query param during rollout. */
+  /* Live published form URLs. qa + miracles are filled once those two forms
+     are built; until then their buttons show a short notice. */
   var FORMS = {
-    nightly: "https://docs.google.com/forms/d/e/1FAIpQLScrX2jAsOwvuu_FFN8irQebv22L7UTSLLa4bXF2vq9xttF5Kw/viewform",
-    weekly:  "https://docs.google.com/forms/d/e/1FAIpQLSc22UrYstUeTyoKBeWoITv_NiYUokV5U_8MSsmWsKJ-OBIQbQ/viewform"
+    nightly:  "https://docs.google.com/forms/d/e/1FAIpQLScrX2jAsOwvuu_FFN8irQebv22L7UTSLLa4bXF2vq9xttF5Kw/viewform",
+    weekly:   "https://docs.google.com/forms/d/e/1FAIpQLSc22UrYstUeTyoKBeWoITv_NiYUokV5U_8MSsmWsKJ-OBIQbQ/viewform",
+    qa:       "https://docs.google.com/forms/d/e/1FAIpQLSf72Z03j1EPHIZzsb7aQOXClvpKfF5mlZUYF364OCpFlTaxDQ/viewform",
+    miracles: "https://docs.google.com/forms/d/e/1FAIpQLSdy_KR3Sid9weufPdtohZFsjai5NtEQLg6K6TloF6uvgmS2UQ/viewform"
   };
   document.querySelectorAll('.form-btn[data-form]').forEach(function(btn){
     var url = FORMS[btn.dataset.form];
@@ -390,7 +527,7 @@
     } else {
       btn.addEventListener('click', function(e){
         e.preventDefault();
-        alert('El enlace del formulario aún no está configurado. Pídeselo a tu líder de zona.');
+        alert('Este formulario aún no está disponible. Pídeselo a tu líder de zona.');
       });
     }
   });
