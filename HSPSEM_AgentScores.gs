@@ -78,16 +78,28 @@ var ASC_SKILL_WEIGHTS = {
   close_rate:   0.20
 };
 
-// ── KI component weights — equal weight over the 7 ki_*_real keys ─────────────
+// ── KI component weights — equal weight over the 8 ki_*_real keys ─────────────
 // Built from HSPSEM_WEEKLY_QUESTIONS (HspsemData.gs) rather than hardcoded, so it
 // can never drift from the real WEEKLY_KI columns HSPSEM_Agent5A.gs writes.
-var ASC_KI_WEIGHTS = (function() {
+// LAZY (2026-08-29 fix): this used to run as a top-level IIFE, reading
+// HSPSEM_WEEKLY_QUESTIONS at FILE LOAD time. Apps Script (and clasp push)
+// load .gs files alphabetically by default, and HspsemData.gs does not sort
+// first — so on every run in the bound project, this executed before
+// HspsemData.gs had loaded, and HSPSEM_WEEKLY_QUESTIONS.forEach threw
+// "Cannot read properties of undefined (reading 'forEach')". Wrapped in a
+// cached getter instead: nothing here touches another file's globals until
+// a function actually calls asc_kiWeights_(), long after every file has
+// loaded — so file order no longer matters.
+var _ascKiWeightsCache_ = null;
+function asc_kiWeights_() {
+  if (_ascKiWeightsCache_) return _ascKiWeightsCache_;
   var w = {};
   HSPSEM_WEEKLY_QUESTIONS.forEach(function(q) {
     if (q.key.indexOf('ki_') === 0 && q.key.indexOf('_real') === q.key.length - 5) w[q.key] = 1;
   });
+  _ascKiWeightsCache_ = w;
   return w;
-})();
+}
 
 // ── Default effectiveness sub-weights (HSPSEM design brief: 0.33/0.33/0.34) ─────
 var ASC_DEFAULT_EFFECTIVENESS = { effort: 0.33, skill: 0.33, ki: 0.34 };
@@ -160,8 +172,8 @@ function setupHspsemScoreConfig() {
   Object.keys(ASC_SKILL_WEIGHTS).forEach(function(k) {
     rows.push(['ALL', k, 'skill', ASC_SKILL_WEIGHTS[k], 'TRUE']);
   });
-  Object.keys(ASC_KI_WEIGHTS).forEach(function(k) {
-    rows.push(['ALL', k, 'ki', ASC_KI_WEIGHTS[k], 'TRUE']);
+  Object.keys(asc_kiWeights_()).forEach(function(k) {
+    rows.push(['ALL', k, 'ki', asc_kiWeights_()[k], 'TRUE']);
   });
 
   rows.push(['', '', '', '', '']); // section separator
@@ -321,7 +333,7 @@ function asc_getAreaConfig(areaCode) {
     fieldWeights: {
       effort: asc_cloneObj(ASC_EFFORT_WEIGHTS),
       skill:  asc_cloneObj(ASC_SKILL_WEIGHTS),
-      ki:     asc_cloneObj(ASC_KI_WEIGHTS)
+      ki:     asc_cloneObj(asc_kiWeights_())
     },
     effectivenessWeights: asc_cloneObj(ASC_DEFAULT_EFFECTIVENESS)
   };
@@ -672,7 +684,7 @@ function asc_loadAreaGoals(areaName, kiRow) {
   }
 
   // KI-component: this area's own Meta values for the scored week
-  Object.keys(ASC_KI_WEIGHTS).forEach(function(kiKey) {
+  Object.keys(asc_kiWeights_()).forEach(function(kiKey) {
     var metaKey = kiKey.replace('_real', '_meta');
     var metaVal = kiRow ? parseFloat(kiRow[metaKey]) : NaN;
     goals[kiKey] = (!isNaN(metaVal) && metaVal > 0) ? metaVal : 1;

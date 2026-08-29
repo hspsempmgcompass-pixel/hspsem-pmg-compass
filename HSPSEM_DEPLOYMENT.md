@@ -212,11 +212,11 @@ The very first one replaces the starter `Code.gs`: paste `HspsemData.gs` into it
 | 16 | `HSPSEM_AgentDuplicate.gs` | `HSPSEM_AgentDuplicate` | Duplicate nightly-submission detection |
 | 17 | `HSPSEM_AgentEscalation.gs` | `HSPSEM_AgentEscalation` | Missed-report escalation to leaders |
 | 18 | `HSPSEM_AgentQA.gs` | `HSPSEM_AgentQA` | Gemini Q&A + suggestions |
-| 19 | `HSPSEM_SeedContent.gs` | `HSPSEM_SeedContent` | The 193 Spanish messages + 10 knowledge-base rows |
+| 19 | `HSPSEM_SeedContent.gs` | `HSPSEM_SeedContent` | The 121 Spanish messages + 10 knowledge-base rows |
 | 20 | `HSPSEM_Setup.gs` | `HSPSEM_Setup` | Triggers, smoke test, email preview |
 | 21 | `HSPSEM_AgentMissionReport.gs` | `HSPSEM_AgentMissionReport` | Monday mission-wide numbers email for AP/MP |
 
-**Do NOT paste into this project:** `BuildHspsemSheet.gs` (already used, standalone only), or any of the four form builders (`DailyReportForm.gs`, `DailyReportForm_ES.gs`, `WeeklyReportForm.gs`, `WeeklyReportForm_ES.gs`).
+**Do NOT paste into this project:** `BuildHspsemSheet.gs` (already used, standalone only), or any of the six form builders (`DailyReportForm.gs`, `DailyReportForm_ES.gs`, `WeeklyReportForm.gs`, `WeeklyReportForm_ES.gs`, `HSPSEM_QAForm_ES.gs`, `HSPSEM_MiracleForm_ES.gs`).
 
 - [ ] All 21 files pasted and saved
 - [ ] No red error markers in the editor
@@ -239,7 +239,7 @@ The Gemini key is deliberately **not** kept in the spreadsheet — a spreadsheet
 
 > There is **no** `GEMINI_API_KEY` row in the `AGENT_CONFIG` tab, and that is deliberate — the tab is built by a script (Step 1) and gets shared with mission leadership, so no cell exists for the key to leak into. Every place in the code that needs the key reads Script Properties, never the spreadsheet. If you are looking for somewhere to paste the key into the sheet, stop — Script Properties, above, is the only place it goes.
 
-The model name *is* read from the sheet: `AGENT_CONFIG` → `GEMINI_QA_MODEL`, which ships as `gemini-2.5-flash`.
+The model name *is* read from the sheet: `AGENT_CONFIG` → `GEMINI_QA_MODEL` (and `GEMINI_MODEL`, read by `callGemini()` for leadership narratives), which both ship as `gemini-flash-latest` — `gemini-2.5-flash` was retired (HTTP 404) 2026-08-29; `gemini-flash-latest` is an alias that tracks whichever flash model is currently live.
 
 Without a key: the Q&A agent logs `GEMINI_API_KEY not set in Script Properties` and answers nothing, and leadership narrative paragraphs are skipped. Everything else — coaching emails, scores, reminders, alerts — works normally, because missionary-facing message text is **never** AI-generated. It is always picked verbatim from `MESSAGE_BANK`.
 
@@ -251,9 +251,9 @@ Run each of these from the Apps Script editor: pick the function in the dropdown
 
 ### 5.1 `seedHspsemMessageBank()`
 
-Writes 193 Spanish message rows into `MESSAGE_BANK` (75 coaching-strength, 75 coaching-growth, 40 Friday encouragement, 3 missed-days), then re-reads the tab to confirm the row count.
+Writes 121 Spanish message rows into `MESSAGE_BANK` (16 metrics × 3 coaching-strength = 48, 16 metrics × 3 coaching-growth = 48, 11 metrics × 2 Friday encouragement = 22, 3 missed-days), then re-reads the tab to confirm the row count.
 
-- [ ] Log says `MESSAGE_BANK written and verified — 193 rows.`
+- [ ] Log says `MESSAGE_BANK written and verified — 121 rows.`
 
 ### 5.2 `seedHspsemKnowledgeBase()`
 
@@ -303,7 +303,8 @@ Open `COMPASS_HSPSE` → `AGENT_CONFIG` tab. It has two columns, `Key` and `Valu
 | `SEND_FROM_EMAIL` | `hspsem.pmg.compass@gmail.com` |
 | `WEEKLY_REMINDER_OWNER` | `AGENT_ESCALATION` ← see Decision 1 in Step 9 |
 | `MISSED_DAYS_LOOKBACK` | `3` |
-| `GEMINI_QA_MODEL` | `gemini-2.5-flash` |
+| `GEMINI_QA_MODEL` | `gemini-flash-latest` |
+| `GEMINI_MODEL` | `gemini-flash-latest` |
 | `CONTACT_RATE_TARGET` / `MC_RATE_TARGET` / `LESSON_RATE_TARGET` / `CLOSE_RATE_TARGET` / `EFFORT_SCORE_TARGET` | `0.50` / `0.50` / `0.20` / `0.25` / `2.75` — mission-tunable targets |
 
 ### Optional — leave blank unless used
@@ -428,11 +429,11 @@ The seeded content banks — plus the hardcoded leadership messages — are list
 
 Three things must happen before go-live.
 
-### 8.1 Fill in the scripture text — 193 of 193 rows ship blank
+### 8.1 Fill in the scripture text — 121 of 121 rows ship blank
 
 Every message row has a scripture **reference** but an empty **`Scripture_Text`** cell. This is deliberate: nobody would invent the wording of Spanish LDS scripture, and a plausible-sounding paraphrase would be far worse than a blank. The agents render a blank verse cleanly — they simply show the reference.
 
-The 193 blanks resolve to only **20 distinct references** (listed with their row counts in `CONTENT_REVIEW.md`). Fill those 20 from the real Spanish edition and every row is covered.
+The 121 blanks resolve to only **20 distinct references** (listed with their row counts in `CONTENT_REVIEW.md`). Fill those 20 from the real Spanish edition and every row is covered.
 
 Because the seeders rewrite `MESSAGE_BANK` from scratch, put the verse text into **`HSPSEM_SeedContent.gs`** and re-paste + re-run `seedHspsemMessageBank()` (Gotcha 1) — not straight into the sheet, or the next seed run erases it. After editing the `.gs`, regenerate the review document with `node tools/gen_content_review.js` so the two cannot drift.
 
@@ -441,7 +442,7 @@ Because the seeders rewrite `MESSAGE_BANK` from scratch, put the verse text into
 
 ### 8.2 Native-speaker review of the Spanish
 
-The Spanish in all 193 messages and 10 knowledge-base rows was **model-written**. It is grammatical but has never been read by a native Chilean speaker. Word choice a reviewer should specifically rule on includes *paradero* and *amigos* (both flagged in `CONTENT_REVIEW.md`).
+The Spanish in all 121 messages and 10 knowledge-base rows was **model-written**. It is grammatical but has never been read by a native Chilean speaker. Word choice a reviewer should specifically rule on includes *paradero* and *amigos* (both flagged in `CONTENT_REVIEW.md`).
 
 - [ ] A native Spanish speaker has read every row in `CONTENT_REVIEW.md`
 - [ ] Mission leadership has approved the tone and the doctrine
@@ -449,7 +450,7 @@ The Spanish in all 193 messages and 10 knowledge-base rows was **model-written**
 
 ### 8.3 Verify the 10 leadership scriptures — these are NOT blank
 
-This one is different from 8.1, and more urgent. The ten leadership messages hardcoded in **`HSPSEM_Agent1C.gs`** (`_LEADERSHIP_MSGS`) ship with their scripture text **already written** — and that text was written by a model, not copied from the official Spanish edition. It is exactly the fabrication the 193 blank rows exist to avoid, and it escaped the gate only because it lives in an agent file rather than the seed content.
+This one is different from 8.1, and more urgent. The ten leadership messages hardcoded in **`HSPSEM_Agent1C.gs`** (`_LEADERSHIP_MSGS`) ship with their scripture text **already written** — and that text was written by a model, not copied from the official Spanish edition. It is exactly the fabrication the 121 blank rows exist to avoid, and it escaped the gate only because it lives in an agent file rather than the seed content.
 
 **At least two are attached to the wrong verse.** The text printed under `D. y C. 4:4-5` is actually D&C 4:2; `D. y C. 11:21` carries something else again. These messages go to zone leaders, district leaders, APs and **the mission president**.
 
@@ -563,11 +564,13 @@ They exist for historical reasons and fall into two groups. `setupReminderTrigge
 
 One exception worth knowing: `setupQA()` also writes a header row into the `SUGGESTIONS` tab (the builder leaves that tab empty), installs the `onQAFormSubmit` trigger, and re-checks that `KNOWLEDGE_BASE` has entries. It is idempotent and harmless. Run it once if you want the `SUGGESTIONS` tab labelled; otherwise the agent appends rows there regardless.
 
-### 9.2b The Q&A form does not exist yet
+### 9.2b The Q&A form — built and live
 
-`onQAFormSubmit` handles a **third**, separate Google Form — a Spanish "question or suggestion" form. **There is no builder for it in this repo**, and the mission has never created it. Installing the trigger is harmless: the handler fires for every form linked to the sheet and immediately ignores any submission that is not a question/suggestion.
+`onQAFormSubmit` handles a **third**, separate Google Form — a Spanish "question or suggestion" form. It now exists: built by `HSPSEM_QAForm_ES.gs` (committed `3ac00b7`), linked to `COMPASS_HSPSE`'s `QA_FORM_RAW` tab.
 
-So until someone builds that form, `HSPSEM_AgentQA.gs` simply never has anything to do. This is a known gap, not a fault. Whoever builds the form must match the field order the handler expects:
+Live form: `forms/d/e/1FAIpQLSf72Z03j1EPHIZzsb7aQOXClvpKfF5mlZUYF364OCpFlTaxDQ`
+
+`HSPSEM_QAForm_ES.gs` builds the form to match `HSPSEM_AgentQA.gs`'s positional `e.values` map exactly, so the field order below is **verified**, not just documented from the handler's own comments:
 
 | Field | Question |
 |---|---|
@@ -575,8 +578,6 @@ So until someone builds that form, `HSPSEM_AgentQA.gs` simply never has anything
 | 1 | ¿Es una pregunta o una sugerencia? |
 | 2–4 | Nombre / Correo / Mensaje *(sección de sugerencia)* |
 | 5–7 | Nombre / Correo / Mensaje *(sección de pregunta)* |
-
-> **Not verified:** that field order was read from the handler's own documentation in `HSPSEM_AgentQA.gs`. It has never been checked against a real HSPSEM Q&A form, because no such form exists. Test one submission end to end when the form is built.
 
 ### 9.3 Verify
 
@@ -662,12 +663,14 @@ All of these take **no arguments**, because the Apps Script Run button cannot pa
 | `buildHspsemSheet()` | `BuildHspsemSheet.gs` | Creates a **new** `COMPASS_HSPSE` spreadsheet. Never edits an existing one. |
 | `buildDailyReportFormES()` | `DailyReportForm_ES.gs` | Creates `Informe Diario Misional` + its own responses sheet |
 | `buildWeeklyReportFormES()` | `WeeklyReportForm_ES.gs` | Creates `Informe Semanal Misional` + its own responses sheet |
+| `buildQAFormES()` | `HSPSEM_QAForm_ES.gs` | Creates the Q&A/suggestions form + its own responses sheet — link to `QA_FORM_RAW` |
+| `buildMiracleFormES()` | `HSPSEM_MiracleForm_ES.gs` | Creates the Milagros form + its own responses sheet — link to `MIRACLES` |
 
 ### In the bound project — setup
 
 | Function | Effect | Re-runnable? |
 |---|---|---|
-| `seedHspsemMessageBank()` | Writes 193 Spanish message rows | Yes — **overwrites** the tab |
+| `seedHspsemMessageBank()` | Writes 121 Spanish message rows | Yes — **overwrites** the tab |
 | `seedHspsemKnowledgeBase()` | Writes 10 Q&A rows | Yes — **overwrites** the tab |
 | `seedHspsemContent()` | Both of the above | Yes — overwrites both |
 | `setupHspsemScoreConfig()` | Writes default scoring weights | Yes — **skips** if already populated |
@@ -697,13 +700,15 @@ All of these take **no arguments**, because the Apps Script Run button cannot pa
 | `MISSION_ORG` | Builder | 99 area rows, names + leadership flags. **Email columns blank — you fill them.** |
 | `AGENT_CONFIG` | Builder | 42 key/value rows; 4 required blanks you fill (Step 6) |
 | `QUESTIONS_CONFIG` | Builder | Maps Spanish form headers to metric keys. Do not hand-edit. |
-| `MESSAGE_BANK` | `seedHspsemMessageBank()` | 193 Spanish messages |
+| `MESSAGE_BANK` | `seedHspsemMessageBank()` | 121 Spanish messages |
 | `KNOWLEDGE_BASE` | `seedHspsemKnowledgeBase()` | 10 Q&A rows |
 | `SCORE_CONFIG` | `setupHspsemScoreConfig()` | Weights — mission-tunable in the sheet |
 | `GOALS_CONFIG` | You (optional) | Per-area goals |
 | `TRANSFER_SCHEDULE` | You | Transfer dates; needed by `runAgent2` |
 | `NIGHTLY_FORM_RAW` | Google Forms | Created on attach; you rename it (Step 2.3) |
 | `WEEKLY_FORM_RAW` | Google Forms | Created on attach; you rename it |
+| `QA_FORM_RAW` | Google Forms | Created on attach — `HSPSEM_QAForm_ES.gs`; you rename it (Step 9.2b) |
+| `MIRACLES` | Google Forms | Created on attach — `HSPSEM_MiracleForm_ES.gs`; you rename it. No processing agent — leadership-reviewed only. |
 | `DAILY_LOG` | Agent3 | Headers written by the agent on first run |
 | `LIVE_SNAPSHOT` | Agent3 | One row per area |
 | `WEEKLY_KI` | Agent5A | Weekly key indicators, Real + Meta |
@@ -719,7 +724,7 @@ All of these take **no arguments**, because the Apps Script Run button cannot pa
 | `SUGGESTIONS` / `SUGGESTIONS_REVIEW` | AgentQA | |
 | `NOTES` | The mission | Notes + reminders |
 
-*(`NIGHTLY_FORM_RAW` and `WEEKLY_FORM_RAW` are not part of the 23 — they are created by Google Forms, which brings the live sheet to 25 tabs.)*
+*(`NIGHTLY_FORM_RAW`, `WEEKLY_FORM_RAW`, `QA_FORM_RAW`, and `MIRACLES` are not part of the 23 — they are created by Google Forms, which brings the live sheet to 27 tabs.)*
 
 ## Troubleshooting
 
@@ -759,6 +764,6 @@ Everything in this document was checked against the actual code in this folder �
 1. **The Google Forms response-destination click path (Step 2.2).** Google changes this interface periodically and it cannot be read from code. The document describes the outcome you want and where to look, rather than inventing a confident sequence of clicks.
 2. **The Google authorization dialog wording (Step 1.3).** Google revises these screens; the described route ("Advanced" → "Go to … (unsafe)") is the long-standing one for unverified personal scripts, but the exact labels may differ.
 3. **Whether form-submit triggers survive a re-run of `setupAllHspsemTriggers()` (Decision 3).** The distinction depends on a Google API (`trigger.getEventType()`) that the offline test suite can only imitate. The runbook makes confirming it a required, explicit check the operator performs once.
-4. **The Q&A form's field order (Step 9.2b).** Documented from the handler's own comments; there is no Q&A form in existence to check it against.
+4. ~~The Q&A form's field order (Step 9.2b).~~ **RESOLVED 2026-08-29** — `HSPSEM_QAForm_ES.gs` now builds the form directly from the same field order `HSPSEM_AgentQA.gs` expects, and it is live. No longer unverified.
 5. **Every agent's behaviour against real Google infrastructure.** All 16 test files pass, but they run against a Node stand-in for Google Apps Script. Nothing in this system has ever run on Google. That is the whole reason Steps 7 and 9 insist on a real test submission and a full week in `TEST_MODE` before go-live.
 

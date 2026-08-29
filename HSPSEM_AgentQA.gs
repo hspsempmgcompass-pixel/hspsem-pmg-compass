@@ -355,7 +355,7 @@ function aqa_askGeminiWithKB(question, kbEntries) {
   }).join('\n\n---\n\n');
 
   var prompt = aqa_buildGeminiPrompt(question, kbText);
-  var model  = getConfig('GEMINI_QA_MODEL') || 'gemini-2.5-flash';
+  var model  = getConfig('GEMINI_QA_MODEL') || 'gemini-flash-latest';
 
   var raw = aqa_callGeminiQA_(prompt, model, 800);
   if (!raw) return null;
@@ -813,7 +813,7 @@ function setupQA() {
     if (qaModel) {
       Logger.log('[PASS] GEMINI_QA_MODEL = ' + qaModel);
     } else {
-      Logger.log('[WARN] GEMINI_QA_MODEL not set in AGENT_CONFIG — will default to gemini-2.5-flash.');
+      Logger.log('[WARN] GEMINI_QA_MODEL not set in AGENT_CONFIG — will default to gemini-flash-latest.');
     }
   } catch (e) {
     Logger.log('[WARN] Could not read GEMINI_QA_MODEL: ' + e.message);

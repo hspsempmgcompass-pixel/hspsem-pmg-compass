@@ -394,7 +394,7 @@ function testRelay() {
 
 /**
  * Makes a Gemini API call and returns the response as a trimmed string.
- * Uses GEMINI_MODEL from AGENT_CONFIG (defaults to 'gemini-1.5-flash').
+ * Uses GEMINI_MODEL from AGENT_CONFIG (defaults to 'gemini-flash-latest').
  * Uses GEMINI_API_KEY from Script Properties — never from the spreadsheet.
  *
  * @param {string} prompt - The full prompt to send to Gemini.
@@ -410,9 +410,11 @@ function callGemini(prompt, maxOutputTokens) {
     );
   }
 
-  // Fallback must be a model this key can actually reach: gemini-1.5-flash was
-  // retired (HTTP 404) and gemini-2.0-flash has a zero quota on this key.
-  var model = getConfig('GEMINI_MODEL') || 'gemini-2.5-flash';
+  // Fallback must be a model this key can actually reach: gemini-1.5-flash and
+  // gemini-2.5-flash were both retired (HTTP 404) and gemini-2.0-flash has a
+  // zero quota on this key. gemini-flash-latest is an alias that tracks
+  // whichever flash model is currently live, confirmed working 2026-08-29.
+  var model = getConfig('GEMINI_MODEL') || 'gemini-flash-latest';
   var url   = 'https://generativelanguage.googleapis.com/v1beta/models/' +
               model + ':generateContent?key=' + apiKey;
 
@@ -431,7 +433,7 @@ function callGemini(prompt, maxOutputTokens) {
     muteHttpExceptions: true
   };
 
-  // Free tier: 5 RPM limit (gemini-2.5-flash) — 13-second spacing holds calls to ~4.6/min
+  // Free tier: 5 RPM limit (gemini-flash-latest) — 13-second spacing holds calls to ~4.6/min
   Utilities.sleep(13000);
 
   var response = UrlFetchApp.fetch(url, options);
@@ -516,7 +518,7 @@ function pickMessage(areaKey, category, metric, stats) {
   }
 
   // Random selection from eligible pool — all eligible messages are curated and appropriate.
-  // Gemini selection was removed because gemini-2.5-flash has a 5 RPM free-tier limit:
+  // Gemini selection was removed because gemini-flash-latest has a 5 RPM free-tier limit:
   // 68+ areas × 2 messages each = 136 calls → exceeds both quota and Apps Script's 6-min limit.
   var idx    = Math.floor(Math.random() * eligible.length);
   var picked = eligible[idx].messageId;
@@ -925,7 +927,7 @@ function checkGeminiQuota() {
   var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
   if (!apiKey) { Logger.log('ERROR: GEMINI_API_KEY not set in Script Properties.'); return; }
 
-  var model = getConfig('GEMINI_MODEL') || 'gemini-2.5-flash';
+  var model = getConfig('GEMINI_MODEL') || 'gemini-flash-latest';
   var url   = 'https://generativelanguage.googleapis.com/v1beta/models/' +
               model + ':generateContent?key=' + apiKey;
 
@@ -959,7 +961,7 @@ function checkGeminiQuota() {
 
     if (retrySec !== null) {
       if (retrySec < 120) {
-        Logger.log('   ⏱ Retry in: ' + Math.ceil(retrySec) + 's → PER-MINUTE limit hit (5 RPM on gemini-2.5-flash). Resets in under 2 minutes.');
+        Logger.log('   ⏱ Retry in: ' + Math.ceil(retrySec) + 's → PER-MINUTE limit hit (5 RPM on gemini-flash-latest). Resets in under 2 minutes.');
       } else {
         var hrs  = Math.floor(retrySec / 3600);
         var mins = Math.floor((retrySec % 3600) / 60);

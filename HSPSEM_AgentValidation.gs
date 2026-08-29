@@ -36,13 +36,32 @@
  */
 
 // ── Numeric fields — derived from the single source of truth in HspsemData.gs ───
-var AV_NIGHTLY_NUMERIC_FIELDS = HSPSEM_NIGHTLY_QUESTIONS
-  .filter(function(q) { return q.type === 'NUMBER'; })
-  .map(function(q) { return q.headerEs; });
+// LAZY (2026-08-29 fix): these used to run as top-level code, reading
+// HSPSEM_NIGHTLY_QUESTIONS/HSPSEM_WEEKLY_QUESTIONS at FILE LOAD time. Apps
+// Script (and clasp push) load .gs files alphabetically by default, and
+// HspsemData.gs does not sort first — so on every run in the bound project,
+// this executed before HspsemData.gs had loaded, throwing "Cannot read
+// properties of undefined (reading 'filter')". Wrapped in cached getters
+// instead: nothing here touches another file's globals until
+// av_nightlyNumericFields_()/av_weeklyNumericFields_() is actually called,
+// long after every file has loaded — so file order no longer matters.
+var _avNightlyNumericFieldsCache_ = null;
+function av_nightlyNumericFields_() {
+  if (_avNightlyNumericFieldsCache_) return _avNightlyNumericFieldsCache_;
+  _avNightlyNumericFieldsCache_ = HSPSEM_NIGHTLY_QUESTIONS
+    .filter(function(q) { return q.type === 'NUMBER'; })
+    .map(function(q) { return q.headerEs; });
+  return _avNightlyNumericFieldsCache_;
+}
 
-var AV_WEEKLY_NUMERIC_FIELDS = HSPSEM_WEEKLY_QUESTIONS
-  .filter(function(q) { return q.type === 'NUMBER'; })
-  .map(function(q) { return q.headerEs; });
+var _avWeeklyNumericFieldsCache_ = null;
+function av_weeklyNumericFields_() {
+  if (_avWeeklyNumericFieldsCache_) return _avWeeklyNumericFieldsCache_;
+  _avWeeklyNumericFieldsCache_ = HSPSEM_WEEKLY_QUESTIONS
+    .filter(function(q) { return q.type === 'NUMBER'; })
+    .map(function(q) { return q.headerEs; });
+  return _avWeeklyNumericFieldsCache_;
+}
 
 
 /**
@@ -74,7 +93,7 @@ function av_validateFormRow(e, formType) {
     var sectionEnd   = sec.end;
 
     // ── Validate every numeric field found within that section ────────────────
-    var numericFields = formType === 'weekly' ? AV_WEEKLY_NUMERIC_FIELDS : AV_NIGHTLY_NUMERIC_FIELDS;
+    var numericFields = formType === 'weekly' ? av_weeklyNumericFields_() : av_nightlyNumericFields_();
     var failures = []; // { field, value }
 
     numericFields.forEach(function(fieldName) {

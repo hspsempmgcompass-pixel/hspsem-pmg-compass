@@ -14,24 +14,30 @@
  * ENTIRE vocabulary the system can speak to a missionary.
  *
  * ── RUN ONCE (zero-argument, so the Apps Script Run button can call them) ───
- *   seedHspsemMessageBank()    — 193 rows
+ *   seedHspsemMessageBank()    — 121 rows
  *   seedHspsemKnowledgeBase()  — 10 rows
  * Both are safe to re-run: each rewrites its tab from scratch (header + rows),
  * so re-running can never duplicate content.
  *
- * ── CONTENT MATRIX (193 MESSAGE_BANK rows) ─────────────────────────────────
- *   SUNDAY_COACHING_STRENGTH  25 metrics x 3 =  75
- *   SUNDAY_COACHING_GROWTH    25 metrics x 3 =  75
- *   FRIDAY_ENCOURAGEMENT      20 metrics x 2 =  40
+ * ── CONTENT MATRIX (121 MESSAGE_BANK rows) ─────────────────────────────────
+ * Verified 2026-08-29 by actually running csc_buildMessageRows_() against
+ * the current HSPSE metric catalog (METRIC_CATALOG_ES.md v2) — not
+ * recomputed by hand, since the two component counts below don't share a
+ * denominator and hand math on this one is easy to get subtly wrong:
+ *   SUNDAY_COACHING_STRENGTH  16 metrics x 3 =  48
+ *   SUNDAY_COACHING_GROWTH    16 metrics x 3 =  48
+ *   FRIDAY_ENCOURAGEMENT      11 metrics x 2 =  22
  *   MISSED_DAYS                              =   3
  *                                              ---
- *                                              193
- * "25 metrics" = the 5 rate metrics of A1A_RATE_METRICS (HSPSEM_Agent1A.gs)
- * plus the 20 NUMBER-typed nightly metrics of HSPSEM_NIGHTLY_QUESTIONS
- * (HspsemData.gs). FRIDAY_ENCOURAGEMENT covers only the 20 count metrics —
- * HSPSEM_Agent5B.gs measures progress against weekly COUNT goals, and rate
- * metrics have no count goal to nudge toward. Category strings were read out
- * of the agents themselves (HSPSEM_Agent1B.gs:70-80, HSPSEM_Agent5B.gs:265,
+ *                                              121
+ * "16 metrics" = the 5 rate metrics of A1A_RATE_METRICS (HSPSEM_Agent1A.gs:
+ * contact_rate, mc_rate, lesson_rate, close_rate, effort_score) plus the 11
+ * NUMBER-typed nightly metrics of HSPSEM_NIGHTLY_QUESTIONS (HspsemData.gs —
+ * 12 nightly metrics minus 'effort', which is CHOICE, not NUMBER).
+ * FRIDAY_ENCOURAGEMENT covers only the 11 count metrics — HSPSEM_Agent5B.gs
+ * measures progress against weekly COUNT goals, and rate metrics have no
+ * count goal to nudge toward. Category strings were read out of the agents
+ * themselves (HSPSEM_Agent1B.gs:70-80, HSPSEM_Agent5B.gs:265,
  * HSPSEM_Agent3.gs:1005) and cross-checked against HSPSEM_Agent4.gs:94-97.
  *
  * ── THREE CONTENT RULES ENFORCED THROUGHOUT ────────────────────────────────
@@ -718,7 +724,7 @@ function csc_makeRow_(messageId, category, metricKey, subject, body) {
 }
 
 /**
- * Builds all 193 MESSAGE_BANK data rows (no header).
+ * Builds all 121 MESSAGE_BANK data rows (no header).
  * Throws if any metric key is missing content — a silently short bank means
  * pickMessage() returns null and an area gets no coaching message at all.
  */
@@ -853,7 +859,7 @@ function csc_writeTab_(tabName, headers, rows) {
 }
 
 /**
- * Seeds MESSAGE_BANK with the full Spanish content set (193 rows).
+ * Seeds MESSAGE_BANK with the full Spanish content set (121 rows).
  * Zero-argument so it can be run straight from the Apps Script Run button.
  * Safe to re-run: the tab is rewritten from scratch every time.
  */

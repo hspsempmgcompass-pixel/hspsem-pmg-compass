@@ -401,7 +401,7 @@ function a5b_getMessagesForMetric(messageBank, metricKey, displayMap) {
 /**
  * Picks a FRIDAY_ENCOURAGEMENT message for this area.
  * Random selection from the recency-filtered pool — all messages are curated
- * and appropriate. No Gemini call: gemini-2.5-flash's free-tier 5 RPM limit
+ * and appropriate. No Gemini call: gemini-flash-latest's free-tier 5 RPM limit
  * would blow past Apps Script's 6-minute execution cap once more than a
  * handful of areas qualify in the same run (same reasoning as
  * HSPSEM_Helpers.gs pickMessage()). Always avoids avoidId (last message sent

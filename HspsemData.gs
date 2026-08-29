@@ -229,7 +229,8 @@ var HSPSEM_AGENT_CONFIG_ROWS = [
   ['RELAY_1_URL', ''],
   ['RELAY_2_URL', ''],
   ['RELAY_SECRET', ''],
-  ['GEMINI_QA_MODEL', 'gemini-2.5-flash'],
+  ['GEMINI_QA_MODEL', 'gemini-flash-latest'],
+  ['GEMINI_MODEL', 'gemini-flash-latest'], // callGemini() (HSPSEM_Helpers.gs) reads this — was missing entirely, only worked via its now-dead hardcoded default
   ['MISSED_DAYS_LOOKBACK', '3'],
   ['WEEKLY_REMINDER_OWNER', 'AGENT_ESCALATION'],
   ['CONTACT_RATE_TARGET', '0.50'],
