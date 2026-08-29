@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PMG Compass — Guía de Campo — Honduras San Pedro Sula Este</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0d1117; --surface:#161b27; --card:#1e2438; --border:#2a3050;
+      --accent:#e8a838; --accent2:#5b8dee; --accent3:#4ecda4;
+      --text:#dde3f0; --muted:#b0bcd4; --warning-bg:#2a2010;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+    body{background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;
+      font-weight:300;line-height:1.7;font-size:16px;padding-bottom:64px;}
+
+    /* ---------- header ---------- */
+    header{background:linear-gradient(135deg,#111827 0%,#1a2035 60%,#0f1c2e 100%);
+      border-bottom:1px solid var(--border);padding:36px 20px 28px;text-align:center;
+      position:relative;overflow:hidden;}
+    header::before{content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 50% 0%,rgba(232,168,56,0.12) 0%,transparent 70%);
+      pointer-events:none;}
+    header .badge{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:0.16em;
+      text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,168,56,0.4);
+      border-radius:100px;padding:4px 13px;margin-bottom:14px;}
+    header h1{font-family:'Fraunces',Georgia,serif;font-weight:700;
+      font-size:clamp(1.6rem,6vw,2.4rem);color:#fff;letter-spacing:-0.01em;}
+    header h1 span{color:var(--accent);}
+    header .mission{margin-top:8px;color:var(--muted);font-size:13.5px;}
+
+    /* ---------- form buttons ---------- */
+    .form-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
+    .form-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:9px;
+      font-size:13.5px;font-weight:500;text-decoration:none;transition:transform .12s,opacity .12s;}
+    .form-btn:active{transform:scale(0.97);}
+    .form-btn.nightly{background:var(--accent);color:#0d1117;}
+    .form-btn.weekly{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+
+    /* ---------- layout ---------- */
+    main{max-width:760px;margin:0 auto;padding:28px 18px;}
+
+    /* ---------- table of contents ---------- */
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+      padding:6px 8px;margin-bottom:32px;}
+    .toc summary{font-family:'Fraunces',serif;font-size:13px;font-weight:600;color:var(--accent);
+      text-transform:uppercase;letter-spacing:0.1em;padding:12px 12px;cursor:pointer;
+      list-style:none;}
+    .toc summary::-webkit-details-marker{display:none;}
+    .toc summary::after{content:'▾';float:right;color:var(--muted);}
+    .toc[open] summary::after{content:'▴';}
+    .toc a{display:block;font-size:13.5px;color:var(--muted);text-decoration:none;
+      padding:8px 12px;border-radius:7px;border-left:2px solid transparent;}
+    .toc a:active{background:rgba(232,168,56,0.08);}
+    .toc a.sub{padding-left:24px;font-size:12.5px;}
+
+    /* ---------- sections ---------- */
+    section{margin-bottom:44px;scroll-margin-top:16px;}
+    .section-header{display:flex;align-items:center;gap:11px;margin-bottom:18px;
+      padding-bottom:12px;border-bottom:1px solid var(--border);}
+    .section-header .icon{width:34px;height:34px;flex:0 0 auto;background:rgba(232,168,56,0.15);
+      border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+    .section-header h2{font-family:'Fraunces',serif;font-size:1.32rem;font-weight:600;color:#fff;}
+
+    /* ---------- metric cards ---------- */
+    .term-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+      padding:16px 18px;margin-bottom:13px;scroll-margin-top:16px;}
+    .term-card .term-name{font-family:'Fraunces',serif;font-size:1.02rem;font-weight:600;
+      color:var(--accent);margin-bottom:3px;}
+    .term-card .term-key{font-size:10.5px;color:var(--muted);font-family:ui-monospace,Consolas,monospace;
+      letter-spacing:0.03em;margin-bottom:9px;opacity:.75;}
+    .term-card p{font-size:14.5px;color:var(--text);font-weight:300;}
+    .term-card.weekly .term-name{color:var(--accent2);}
+    .term-card .choices{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap;}
+    .term-card .choices span{font-size:12px;background:rgba(91,141,238,0.14);color:var(--accent2);
+      border:1px solid rgba(91,141,238,0.3);border-radius:6px;padding:2px 9px;}
+    .term-card .draft{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.05em;
+      text-transform:uppercase;color:var(--accent3);border:1px solid rgba(78,205,164,.4);
+      border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle;}
+
+    /* ---------- callouts ---------- */
+    .callout{background:var(--warning-bg);border-left:3px solid var(--accent);
+      border-radius:0 8px 8px 0;padding:13px 16px;margin:18px 0;font-size:13.5px;color:var(--text);}
+    .callout .lead{color:var(--accent);display:block;margin-bottom:3px;font-weight:600;}
+    .callout strong{color:var(--accent);font-weight:600;}
+    .callout.blue{background:rgba(91,141,238,0.1);border-left-color:var(--accent2);}
+    .callout.blue .lead,.callout.blue strong{color:var(--accent2);}
+
+    /* ---------- faq ---------- */
+    .faq-item{margin-bottom:18px;}
+    .faq-item .q{font-weight:500;color:var(--accent2);margin-bottom:4px;font-size:14.5px;}
+    .faq-item .a{font-size:14px;color:var(--muted);font-weight:300;}
+
+    footer{text-align:center;padding:22px 18px;color:var(--muted);font-size:11.5px;
+      border-top:1px solid var(--border);max-width:760px;margin:0 auto;}
+
+    a{color:var(--accent2);}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Guía de Referencia para Misioneros</div>
+  <h1>PMG <span>Compass</span></h1>
+  <div class="mission">Misión Honduras San Pedro Sula Este</div>
+  <div class="form-links">
+    <a href="#" class="form-btn nightly" data-form="nightly">📋 Formulario Nocturno</a>
+    <a href="#" class="form-btn weekly" data-form="weekly">📅 Formulario Semanal</a>
+  </div>
+</header>
+
+<main>
+
+  <div class="callout">
+    <span class="lead">Guarda esta página en tu teléfono</span>
+    En Chrome o Safari, abre el menú y elige <em>“Agregar a la pantalla de inicio”</em>.
+    Ábrela cada noche mientras llenas el formulario.
+  </div>
+
+  <details class="toc" open>
+    <summary>Contenido</summary>
+    <a href="#nocturno">📋 Formulario Nocturno</a>
+    <a class="sub" href="#new_people_found">Nuevas personas encontradas</a>
+    <a class="sub" href="#contacts_attempted">Intentos de contacto</a>
+    <a class="sub" href="#contacts_made">Contactos con amigos</a>
+    <a class="sub" href="#meaningful_conversations">Conversaciones significativas</a>
+    <a class="sub" href="#friend_lessons">Lecciones con amigos</a>
+    <a class="sub" href="#lessons_member_present">Lecciones con un miembro presente</a>
+    <a class="sub" href="#rc_lessons">Lecciones con conversos recientes</a>
+    <a class="sub" href="#church_invites">Invitaciones a la Iglesia</a>
+    <a class="sub" href="#bom_shared">Libros de Mormón entregados</a>
+    <a class="sub" href="#effort">Esfuerzo en el altar del sacrificio</a>
+    <a class="sub" href="#baptismal_invitations">Invitaciones al bautismo</a>
+    <a class="sub" href="#baptismal_calendars">Calendarios bautismales</a>
+    <a href="#semanal">📅 Formulario Semanal</a>
+    <a href="#faq">❓ Preguntas Frecuentes</a>
+  </details>
+
+  <!-- ============ NIGHTLY ============ -->
+  <section id="nocturno">
+    <div class="section-header"><div class="icon">📋</div><h2>Formulario Nocturno</h2></div>
+
+    <div class="callout">
+      <span class="lead">Cada noche, antes de dormir</span>
+      12 preguntas — toma de 3 a 5 minutos. Escribe <strong>0</strong> cuando no hiciste
+      algo; nunca dejes un campo en blanco. Un 0 también comunica algo al liderazgo.
+    </div>
+
+    <div class="callout blue">
+      <span class="lead">La cadena de contacto</span>
+      Cada lección cuenta también como conversación significativa, contacto e intento de
+      contacto. Por eso el número de lecciones nunca debe ser mayor que el de conversaciones
+      significativas. Di siempre <strong>“amigo”</strong>, nunca “investigador”.
+    </div>
+
+    <div class="term-card" id="new_people_found">
+      <div class="term-name">Nuevas personas encontradas</div>
+      <div class="term-key">new_people_found</div>
+      <p>Cada persona (que no haya sido bautizada) que haya recibido una lección durante la
+      semana, que no haya sido enseñada en los últimos tres meses y que haya aceptado una cita
+      específica para regresar. Normalmente, una lección incluye una oración (cuando sea
+      apropiado), la enseñanza de al menos un principio del evangelio y una invitación.</p>
+    </div>
+
+    <div class="term-card" id="contacts_attempted">
+      <div class="term-name">Intentos de contacto con amigos</div>
+      <div class="term-key">contacts_attempted</div>
+      <p>Cuente cada intento de contactar a un amigo hoy, independientemente de si la persona
+      respondió o no. Si nadie respondió, igualmente cuenta aquí. Incluye los intentos
+      realizados en cualquier lugar — en la calle, en lugares públicos, por referencia o de
+      cualquier otra forma.</p>
+    </div>
+
+    <div class="term-card" id="contacts_made">
+      <div class="term-name">Contactos con amigos</div>
+      <div class="term-key">contacts_made</div>
+      <p>Cuente cada ocasión en la que una persona respondió y usted logró establecer contacto.
+      Todo contacto también cuenta como un intento de contacto. Incluye los contactos hechos en
+      cualquier lugar — en la calle, en lugares públicos o por referencia.</p>
+    </div>
+
+    <div class="term-card" id="meaningful_conversations">
+      <div class="term-name">Conversaciones significativas con amigos</div>
+      <div class="term-key">meaningful_conversations</div>
+      <p>Una conversación con un amigo que duró más de tres minutos e incluyó un principio o
+      mensaje del evangelio. Sea honesto consigo mismo: ¿fue realmente una conversación
+      significativa? Si la respuesta es sí, también cuenta como un contacto y un intento de
+      contacto.</p>
+    </div>
+
+    <div class="term-card" id="friend_lessons">
+      <div class="term-name">Lecciones con amigos</div>
+      <div class="term-key">friend_lessons</div>
+      <p>Una visita con un amigo en la que usted enseñó un principio del evangelio y extendió
+      una invitación. Cada lección también cuenta como una conversación significativa, un
+      contacto y un intento de contacto. El número de lecciones nunca debe ser mayor que el de
+      conversaciones significativas. Si lo es, revise nuevamente sus registros.</p>
+    </div>
+
+    <div class="term-card" id="lessons_member_present">
+      <div class="term-name">Lecciones con un miembro presente</div>
+      <div class="term-key">lessons_member_present</div>
+      <p>La cantidad de lecciones dadas hoy en las que estuvieron presentes tanto un amigo como
+      un miembro de la Iglesia. No corresponde al total de lecciones, sino únicamente a
+      aquellas en las que también participó un miembro.</p>
+    </div>
+
+    <div class="term-card" id="rc_lessons">
+      <div class="term-name">Lecciones con conversos recientes</div>
+      <div class="term-key">rc_lessons</div>
+      <p>Las lecciones dadas hoy únicamente a conversos recientes. No incluya amigos en este
+      conteo; es exclusivamente para conversos recientes.</p>
+    </div>
+
+    <div class="term-card" id="church_invites">
+      <div class="term-name">Invitaciones a la Iglesia extendidas</div>
+      <div class="term-key">church_invites</div>
+      <p>La cantidad de amigos a quienes usted invitó personalmente a asistir a una reunión o
+      actividad de la Iglesia hoy. Cuente cada invitación, independientemente de si fue
+      aceptada o rechazada.</p>
+    </div>
+
+    <div class="term-card" id="bom_shared">
+      <div class="term-name">Copias del Libro de Mormón entregadas</div>
+      <div class="term-key">bom_shared</div>
+      <p>La cantidad de copias del Libro de Mormón que entregó hoy a amigos, ya sean físicos o
+      digitales. Cuente cada persona que recibió uno.</p>
+    </div>
+
+    <div class="term-card" id="effort">
+      <div class="term-name">¿Dio todo, la mayor parte o algo de esfuerzo en el altar del sacrificio hoy?</div>
+      <div class="term-key">effort</div>
+      <p>Una autoevaluación personal del esfuerzo que usted dio hoy. Sea honesto: esto es entre
+      usted y el Señor. Seleccione <strong>Todo</strong> si dio todo lo que tenía sin reservas,
+      <strong>La mayor parte</strong> si trabajó diligentemente pero sintió que pudo haber dado
+      un poco más, o <strong>Algo</strong> si su esfuerzo fue solo parcial. No se trata de ser
+      perfecto, sino de ser honesto.</p>
+      <div class="choices"><span>Todo</span><span>La mayor parte</span><span>Algo</span></div>
+    </div>
+
+    <div class="term-card" id="baptismal_invitations">
+      <div class="term-name">Invitaciones al bautismo extendidas</div>
+      <div class="term-key">baptismal_invitations</div>
+      <p>La cantidad de personas a quienes invitó claramente a bautizarse hoy. Cuente cada
+      invitación, independientemente de si fue aceptada, rechazada o pospuesta.</p>
+    </div>
+
+    <div class="term-card" id="baptismal_calendars">
+      <div class="term-name">Calendarios bautismales entregados</div>
+      <div class="term-key">baptismal_calendars</div>
+      <p>La cantidad de calendarios bautismales o planes de preparación para el bautismo que
+      entregó a personas que se están preparando para bautizarse. Cuente cada persona que
+      recibió uno.</p>
+    </div>
+  </section>
+
+  <!-- ============ WEEKLY ============ -->
+  <section id="semanal">
+    <div class="section-header"><div class="icon">📅</div><h2>Formulario Semanal</h2></div>
+
+    <div class="callout">
+      <span class="lead">Una vez por semana</span>
+      Cada indicador se ingresa <strong>dos veces</strong>: el resultado <strong>Real</strong>
+      de la semana pasada y la <strong>Meta</strong> que fijó para la próxima semana durante
+      la planificación semanal. Use los mismos números de la aplicación Predicad Mi Evangelio.
+    </div>
+
+    <div class="callout blue">
+      <span class="lead">Regla de “Bautizados y confirmados”</span>
+      Si alguien fue bautizado la semana pasada pero confirmado esta semana, cuéntelo esta
+      semana — ambas cosas deben haber ocurrido para contarlo.
+    </div>
+
+    <div class="term-card weekly" id="ki_pew">
+      <div class="term-name">Amigos en la reunión sacramental</div>
+      <div class="term-key">ki_pew</div>
+      <p>Amigos que asistieron a la reunión sacramental esta semana.</p>
+    </div>
+
+    <div class="term-card weekly" id="ki_baptismal_date">
+      <div class="term-name">Amigos con fecha bautismal</div>
+      <div class="term-key">ki_baptismal_date</div>
+      <p>Amigos que tienen una fecha de bautismo fijada en este momento. Es el total vigente,
+      no solo las fechas nuevas de esta semana.</p>
+    </div>
+
+    <div class="term-card weekly" id="ki_baptized_confirmed">
+      <div class="term-name">Bautizados y confirmados</div>
+      <div class="term-key">ki_baptized_confirmed</div>
+      <p>Amigos que fueron bautizados <strong>y</strong> confirmados esta semana. Ambas
+      ordenanzas deben haber ocurrido.</p>
+    </div>
+
+    <div class="term-card weekly" id="ki_rc_at_church">
+      <div class="term-name">Conversos recientes en la Iglesia</div>
+      <div class="term-key">ki_rc_at_church</div>
+      <p>Conversos recientes que asistieron a la reunión sacramental esta semana.</p>
+    </div>
+
+    <div class="term-card weekly" id="ki_rc_could_attend">
+      <div class="term-name">Conversos recientes que podían asistir</div>
+      <div class="term-key">ki_rc_could_attend</div>
+      <p>El número total de conversos recientes en su área esta semana.
+      <strong>Incluya a todos</strong> — también a quienes estaban temporalmente fuera de la
+      ciudad o enfermos. <strong>Excluya únicamente</strong> a los conversos recientes que se
+      han mudado de forma confirmada y de quienes no se sabe su paradero. Se usa junto con
+      “Conversos recientes en la Iglesia” para calcular el porcentaje de asistencia.</p>
+    </div>
+
+    <div class="term-card weekly" id="ki_new_people_found">
+      <div class="term-name">Nuevas personas encontradas</div>
+      <div class="term-key">ki_new_people_found</div>
+      <p>El total de nuevas personas encontradas durante toda la semana, según la norma de
+      Predicad Mi Evangelio.</p>
+    </div>
+
+    <div class="term-card weekly" id="ki_first_week_church">
+      <div class="term-name">Amigos en la Iglesia durante su primera semana de enseñanza</div>
+      <div class="term-key">ki_first_week_church</div>
+      <p>Amigos que asistieron a la reunión sacramental durante la misma semana en que
+      recibieron su primera lección.</p>
+    </div>
+
+    <div class="term-card weekly" id="ki_member_lessons">
+      <div class="term-name">Lecciones con miembros participando</div>
+      <div class="term-key">ki_member_lessons</div>
+      <p>El número de lecciones esta semana en las que un miembro de la Iglesia
+      <strong>participó activamente</strong> — no solo estuvo presente, sino que ayudó a
+      enseñar, compartió su testimonio o apoyó de otra forma en la lección.</p>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section id="faq">
+    <div class="section-header"><div class="icon">❓</div><h2>Preguntas Frecuentes</h2></div>
+
+    <div class="faq-item">
+      <div class="q">¿Qué hago si no hice nada en una categoría hoy?</div>
+      <div class="a">Escribe <strong>0</strong>. Es mejor registrar 0 que dejar el campo en
+      blanco. Los datos incompletos son más difíciles de interpretar que los ceros, y un 0
+      consistente comunica algo importante al liderazgo.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="q">¿Puedo contar el mismo esfuerzo en varias categorías?</div>
+      <div class="a">Sí, cuando forma parte de la cadena de contacto. Si enseñaste una lección,
+      esa lección también cuenta como conversación significativa, contacto e intento de
+      contacto. Pero si hablaste con dos personas distintas, son dos intentos de contacto
+      separados.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="q">¿Qué fecha ingreso si reporto tarde?</div>
+      <div class="a">La fecha en que <strong>ocurrieron las actividades</strong>, no la fecha en
+      que llenas el formulario. Si el martes reportas lo del lunes, ingresa el lunes.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="q">¿A quién le llegan estos números?</div>
+      <div class="a">Al presidente de misión y a tus líderes, para reconocer tu esfuerzo y
+      apoyarte mejor. Los números por sí solos no cuentan toda la historia — pero ayudan a que
+      nadie pase desapercibido.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  PMG Compass &middot; Misión Honduras San Pedro Sula Este &middot; Español<br>
+  Guía de campo — borrador v1, 29 de agosto de 2026
+</footer>
+
+<script>
+  /* Form URLs get filled in once the Google Forms are created.
+     Replace these two strings, or set them from a query param during rollout. */
+  var FORMS = {
+    nightly: "",   // TODO: URL del Formulario Nocturno (live/published)
+    weekly:  ""    // TODO: URL del Formulario Semanal (live/published)
+  };
+  document.querySelectorAll('.form-btn[data-form]').forEach(function(btn){
+    var url = FORMS[btn.dataset.form];
+    if (url) {
+      btn.href = url;
+      btn.target = "_blank";
+      btn.rel = "noopener";
+    } else {
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        alert('El enlace del formulario aún no está configurado. Pídeselo a tu líder de zona.');
+      });
+    }
+  });
+  /* Collapse the TOC after tapping a link, on small screens. */
+  document.querySelectorAll('.toc a').forEach(function(a){
+    a.addEventListener('click', function(){
+      if (window.innerWidth < 720) document.querySelector('.toc').open = false;
+    });
+  });
+</script>
+
+</body>
+</html>
