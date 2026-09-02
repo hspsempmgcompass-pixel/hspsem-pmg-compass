@@ -96,8 +96,8 @@ GOAL_TO_ACTUAL: dict[str, str] = {
     "baptisms":                  "ki_baptized_confirmed_real",
     "confirmations":             "ki_baptized_confirmed_real",
     "on_date":                   "ki_baptismal_date_real",
-    "at_sacrament":              "ki_friends_sacrament_real",
-    "new_people_to_teach":       "ki_new_people_real",
+    "at_sacrament":              "ki_pew_real",
+    "new_people_to_teach":       "ki_new_people_found_real",
     "rc_at_church":              "ki_rc_at_church_real",
     "members_nonmember_lessons": "ki_member_lessons_real",
 }

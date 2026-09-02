@@ -198,16 +198,16 @@ def test_rate_metrics_match_agent1a():
     only safe if something checks it, so this parses A1A_RATE_METRICS out of
     the agent and compares keys AND display names.
     """
-    src = (REPO_ROOT / "CCSM_Agent1A.gs").read_text(encoding="utf-8-sig")
+    src = (REPO_ROOT / "HSPSEM_Agent1A.gs").read_text(encoding="utf-8-sig")
     block = re.search(r"var A1A_RATE_METRICS = \[(.*?)\n\];", src, re.S)
-    assert block, "A1A_RATE_METRICS not found in CCSM_Agent1A.gs — did it get renamed?"
+    assert block, "A1A_RATE_METRICS not found in HSPSEM_Agent1A.gs — did it get renamed?"
 
     pairs = re.findall(
         r"\{\s*key:\s*'([^']+)'\s*,\s*display:\s*'([^']+)'", block.group(1))
     assert pairs, "parsed no key/display pairs out of A1A_RATE_METRICS"
 
     assert dict(pairs) == mc.RATE_METRIC_LABELS, (
-        "RATE_METRIC_LABELS has drifted from CCSM_Agent1A.gs's A1A_RATE_METRICS.\n"
+        "RATE_METRIC_LABELS has drifted from HSPSEM_Agent1A.gs's A1A_RATE_METRICS.\n"
         f"  agent:  {dict(pairs)}\n"
         f"  python: {mc.RATE_METRIC_LABELS}"
     )
@@ -226,18 +226,18 @@ def test_every_scored_metric_is_one_the_mission_actually_collects():
     fake, because the question is whether the real sheet and the real agent
     agree.
     """
-    src = (REPO_ROOT / "CCSM_AgentScores.gs").read_text(encoding="utf-8-sig")
+    src = (REPO_ROOT / "HSPSEM_AgentScores.gs").read_text(encoding="utf-8-sig")
     scored: set[str] = set()
     for name in ("ASC_EFFORT_WEIGHTS", "ASC_SKILL_WEIGHTS"):
         block = re.search(rf"var {name} = \{{(.*?)\n\}};", src, re.S)
-        assert block, f"{name} not found in CCSM_AgentScores.gs — renamed?"
+        assert block, f"{name} not found in HSPSEM_AgentScores.gs — renamed?"
         scored |= set(re.findall(r"^\s*(\w+):", block.group(1), re.M))
     assert scored, "parsed no scored metric keys"
 
     collected = _live_question_keys() | set(mc.RATE_METRICS)
     unknown = sorted(scored - collected)
     assert unknown == [], (
-        f"CCSM_AgentScores.gs scores areas on metric(s) the mission does not "
+        f"HSPSEM_AgentScores.gs scores areas on metric(s) the mission does not "
         f"collect: {unknown}")
 
 
