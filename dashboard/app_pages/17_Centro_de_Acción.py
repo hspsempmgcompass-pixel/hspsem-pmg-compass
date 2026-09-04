@@ -64,7 +64,7 @@ if summary["suggestions_ap_count"] > 0:
         st.markdown(t('**{suggestions_ap_count} suggestion(s) at AP Approval**', suggestions_ap_count=summary['suggestions_ap_count']))
         if st.button(t("Review in Suggestions"), key="ac_go_ap_approval"):
             st.session_state["sug_status"] = "AP Approval"
-            st.switch_page("pages/15_Sugerencias.py")
+            st.switch_page("app_pages/15_Sugerencias.py")
 
 if summary["suggestions_mp_count"] > 0:
     _any_items = True
@@ -72,14 +72,14 @@ if summary["suggestions_mp_count"] > 0:
         st.markdown(t('**{suggestions_mp_count} suggestion(s) at Mission President Approval**', suggestions_mp_count=summary['suggestions_mp_count']))
         if st.button(t("Review in Suggestions"), key="ac_go_mp_approval"):
             st.session_state["sug_status"] = "Mission President Approval"
-            st.switch_page("pages/15_Sugerencias.py")
+            st.switch_page("app_pages/15_Sugerencias.py")
 
 if summary["followups_count"] > 0:
     _any_items = True
     with st.container(border=True):
         st.markdown(t('**{followups_count} note follow-up(s) due**', followups_count=summary['followups_count']))
         if st.button(t("Review in Notes"), key="ac_go_notes"):
-            st.switch_page("pages/10_Notas.py")
+            st.switch_page("app_pages/10_Notas.py")
 
 my_tasks = summary["my_tasks_df"]
 if not my_tasks.empty:
@@ -162,6 +162,6 @@ if summary["maintenance_issues"]:
     for issue in summary["maintenance_issues"]:
         st.warning(issue)
     if st.button(t("Open Maintenance page"), key="ac_go_maintenance"):
-        st.switch_page("pages/18_Mantenimiento.py")
+        st.switch_page("app_pages/18_Mantenimiento.py")
 else:
     st.success(t("No maintenance issues detected."))

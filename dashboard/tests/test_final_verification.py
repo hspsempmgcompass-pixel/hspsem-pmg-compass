@@ -44,7 +44,7 @@ def test_every_page_still_sets_a_ccsm_browser_title():
     """0e7af19 branded the tab because BOTH apps rendered an identical
     'PMG Compass' title and the user could not tell CCSM from Provo apart."""
     missing = []
-    for p in [ROOT / "Home.py", *sorted((ROOT / "pages").glob("*.py"))]:
+    for p in [ROOT / "Home.py", *sorted((ROOT / "app_pages").glob("*.py"))]:
         if p.name == "__init__.py":
             continue
         text = p.read_text(encoding="utf-8-sig")
@@ -67,11 +67,11 @@ def test_no_translation_is_left_blank():
 
 
 @pytest.mark.parametrize("group", [
-    ["Home.py"], ["pages/01_Panel.py"], ["pages/02_Metas.py"],
-    ["pages/04_Desgloses.py"], ["pages/06_Puntajes.py"],
-    ["pages/07_Embudo_de_Búsqueda.py"], ["pages/10_Notas.py"],
-    ["pages/15_Sugerencias.py"], ["pages/17_Centro_de_Acción.py"],
-    ["pages/18_Mantenimiento.py"],
+    ["app_pages/00_Home.py"], ["app_pages/01_Panel.py"], ["app_pages/02_Metas.py"],
+    ["app_pages/04_Desgloses.py"], ["app_pages/06_Puntajes.py"],
+    ["app_pages/07_Embudo_de_Búsqueda.py"], ["app_pages/10_Notas.py"],
+    ["app_pages/15_Sugerencias.py"], ["app_pages/17_Centro_de_Acción.py"],
+    ["app_pages/18_Mantenimiento.py"],
 ])
 def test_each_page_individually_complete(group):
     assert extract_unwrapped(group) == []

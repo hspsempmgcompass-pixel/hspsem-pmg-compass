@@ -6,7 +6,7 @@ Two-layer authentication:
   Layer 2 — Code-level allowlist: only approved emails get in regardless of SSO.
 
 Approved emails:
-  - ALWAYS_ALLOWED hardcoded list (CCSM system account; Mission President once added — see TODO below)
+  - ALWAYS_ALLOWED hardcoded list (HSPSE system account; Mission President once added — see TODO below)
   - Every Companion1_Email / Companion2_Email in MISSION_ORG — i.e. all 97 area
     mailboxes, NOT just APs. (An earlier version of this docstring said
     "Is_AP = TRUE"; get_allowed_emails() has never filtered on that flag.
@@ -30,24 +30,30 @@ _SESSION_TIMEOUT_SECONDS = 4 * 3600  # 4 hours
 # These are approved regardless of MISSION_ORG contents.
 # Add or remove emails here to control access tightly.
 _ALWAYS_ALLOWED = {
-    "ccsm.pmg.compass@gmail.com",   # CCSM system account (from AGENT_CONFIG)
+    "hspsem.pmg.compass@gmail.com",   # HSPSE system account (from AGENT_CONFIG)
 
     # TEMPORARY — deploy verification only, remove before go-live.
     "grayden16gmc@gmail.com",
 
-    # Individual missionaries who sign in with a personal address rather than
-    # their area's shared mailbox. MISSION_ORG only stores the shared mailbox
-    # (a missionary-ID address like 500488642@missionary.org), so anyone using
-    # a different address is invisible to get_allowed_emails() and must be
-    # listed here by hand.
-    "zackary.butterfield@missionary.org",   # Los Huertos, San Pedro zone
-    "hyrum.turner@missionary.org",          # AP1 — TODO: remove ~mid-Sept 2026, goes home in 6 weeks (as of 2026-07-31)
-    "anderson.phillips@missionary.org",     # AP2
+    # TODO — carried over unmodified from the CCSM fork this repo started
+    # from (2026-09-04). These are CCSM missionaries in a CCSM zone ("Los
+    # Huertos, San Pedro zone" is not one of HSPSE's 10 zones), left in only
+    # because they don't grant access to anything real — HSPSE's own
+    # MISSION_ORG governs the real allowlist via get_allowed_emails(). This
+    # section needs HSPSE's real personal-email roster (not yet gathered —
+    # see [[project-hspse-mission-onboarding]]) once it exists.
+    "zackary.butterfield@missionary.org",   # CCSM: Los Huertos, San Pedro zone
+    "hyrum.turner@missionary.org",          # CCSM: AP1
+    "anderson.phillips@missionary.org",     # CCSM: AP2
 
     # Mission President — MISSION_ORG has no churchofjesuschrist.org
     # addresses at all, so the sheet grants him nothing on its own (see
     # module docstring); he can only sign in via this hardcoded entry.
-    "gutierrezsaucedom@churchofjesuschrist.org",   # Presidente Gutierrez
+    # FIXED 2026-09-04: was CCSM's real president's real email
+    # (gutierrezsaucedom@...), copied verbatim from the fork source — that
+    # would have let CCSM's president into HSPSE's dashboard and locked out
+    # HSPSE's own. Confirmed 2026-08-29 during intake (see onboarding memory).
+    "kirt.christensen@churchofjesuschrist.org",   # President Kirt Christensen
 }
 
 # Mission-leadership roles, plus the always-allowed owner/admin accounts above.

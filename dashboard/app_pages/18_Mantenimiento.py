@@ -1023,7 +1023,7 @@ elif _sec == _TAB_SYSTEM:
     if _wf_link:
         _l3.link_button(t("Weekly form ↗"), _wf_link, use_container_width=True)
     st.page_link(
-        "pages/06_Puntajes.py",
+        "app_pages/06_Puntajes.py",
         label="Effectiveness score weights are edited on the **Scores** page →",
     )
 

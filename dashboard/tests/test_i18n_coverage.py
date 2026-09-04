@@ -22,16 +22,24 @@ from app.i18n.es import ES
 from tools.extract_ui_strings import extract, extract_unwrapped
 
 GROUPS = {
-    "task9":  ["Home.py", "pages/01_Panel.py", "pages/04_Desgloses.py"],
-    "task10": ["pages/07_Embudo_de_Búsqueda.py", "pages/10_Notas.py",
-               "pages/15_Sugerencias.py", "pages/17_Centro_de_Acción.py"],
-    "task11": ["pages/06_Puntajes.py", "app/components/design_system.py",
+    # Home.py's page content moved to app_pages/00_Home.py when Home.py
+    # became the st.navigation router (see [[project-hspse-mission-onboarding]]
+    # 2026-09-04) — task9 follows the content, not the filename.
+    "task9":  ["app_pages/00_Home.py", "app_pages/01_Panel.py", "app_pages/04_Desgloses.py"],
+    "task10": ["app_pages/07_Embudo_de_Búsqueda.py", "app_pages/10_Notas.py",
+               "app_pages/15_Sugerencias.py", "app_pages/17_Centro_de_Acción.py"],
+    "task11": ["app_pages/06_Puntajes.py", "app/components/design_system.py",
                "app/components/scope_selector.py"],
-    "task12": ["pages/02_Metas.py", "pages/18_Mantenimiento.py"],
+    "task12": ["app_pages/02_Metas.py", "app_pages/18_Mantenimiento.py"],
     "leftovers": ["app/breakdowns_engine.py", "app/auth/auth.py"],
     # Query modules render their own st.error/st.warning on failure, so their
     # messages are user-facing even though they live in the data layer.
     "queries": ["app/db/goals_queries.py", "app/db/sheets_client.py"],
+    # Home.py's sidebar nav titles deliberately do NOT go through t() — see
+    # app.nav.nav_label()'s docstring — so this AST-based scanner has nothing
+    # to find there. Coverage for those labels lives in
+    # test_nav_and_locale_rendered.py instead, driven directly off
+    # app.nav.NAV_ENTRIES + nav_label() rather than a source-text extractor.
 }
 
 

@@ -2,8 +2,9 @@
 
 Two things a source scan cannot settle:
 
-* what the sidebar will actually say — that comes from Streamlit's own page
-  discovery over the real pages/ directory, not from any string in this repo;
+* what the sidebar will actually say — that comes from resolving each
+  app.nav.NAV_ENTRIES key through the live app.nav.nav_label(), not from any
+  string in this repo;
 * whether a number or date reached the screen in Chilean form, since the
   formatting happens at the call site and the wrong answer is a valid-looking
   number rather than an error.
@@ -15,10 +16,12 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+import streamlit as st
 from streamlit.testing.v1 import AppTest
-from streamlit.source_util import get_pages
 
 from app.config import metric_catalog as mc
+from app.i18n import set_lang
+from app.nav import NAV_ENTRIES, nav_label
 from tests.test_renders_ccsm_with_data import (  # reuse the realistic fixtures
     _daily_log, _dashboard_summary, _questions_config, _weekly_ki,
     MISSION_ORG, SCORE_CONFIG,
@@ -28,47 +31,92 @@ DASHBOARD = Path(__file__).resolve().parent.parent
 
 
 # ── Sidebar navigation ────────────────────────────────────────────────────────
+#
+# Streamlit's classic pages/ auto-discovery froze the sidebar to whatever
+# language the FILENAME happened to be in — CCSM's dashboard deliberately
+# shipped with that as a known gap (see
+# [[feedback-st-navigation-conflicts-with-pages-dir]]). HSPSE's dashboard
+# moved to st.navigation()/st.Page(title=nav_label(...)) specifically so the
+# sidebar follows the Language / Idioma toggle instead. These tests pin the new
+# contract: every entry resolves correctly in BOTH languages, and the list
+# stays in sync with the files actually on disk.
 
-#: filename stem -> what the sidebar must read. Streamlit derives the label from
-#: the filename (underscores become spaces), so this IS the navigation.
-EXPECTED_NAV = {
-    "01_Panel.py":              "Panel",
-    "02_Metas.py":              "Metas",
-    "04_Desgloses.py":          "Desgloses",
-    "06_Puntajes.py":           "Puntajes",
-    "07_Embudo_de_Búsqueda.py": "Embudo de Búsqueda",
-    "10_Notas.py":              "Notas",
-    "15_Sugerencias.py":        "Sugerencias",
-    "17_Centro_de_Acción.py":   "Centro de Acción",
-    "18_Mantenimiento.py":      "Mantenimiento",
+#: i18n key -> (Spanish, English) label the sidebar must show for it.
+EXPECTED_LABELS = {
+    "Home":            ("Inicio", "Home"),
+    "Panel":           ("Panel", "Panel"),
+    "Goals":           ("Metas", "Goals"),
+    "Breakdowns":      ("Desgloses", "Breakdowns"),
+    "Scores":          ("Puntajes", "Scores"),
+    "Finding Funnel":  ("Embudo de Búsqueda", "Finding Funnel"),
+    "Notes":           ("Notas", "Notes"),
+    "Reports":         ("Informes", "Reports"),
+    "Transfers":       ("Traslados", "Transfers"),
+    "Referrals":       ("Referencias", "Referrals"),
+    "Suggestions":     ("Sugerencias", "Suggestions"),
+    "Action Center":   ("Centro de Acción", "Action Center"),
+    "Maintenance":     ("Mantenimiento", "Maintenance"),
+    "Edit Submissions": ("Editar Envíos", "Edit Submissions"),
 }
 
-ENGLISH_NAV_WORDS = ("dashboard", "Goals", "Breakdowns", "Scores",
-                     "Finding", "Funnel", "Notes", "Suggestions",
-                     "Action", "Center", "Maintenance")
+
+@pytest.fixture(autouse=True)
+def _reset_lang():
+    """NAV_ENTRIES tests below flip the real, global st.session_state
+    language (not an isolated AppTest instance's), so it must not bleed into
+    whichever test runs next in the same pytest process."""
+    yield
+    st.session_state.pop("pmg_lang", None)
 
 
-def _discovered_pages():
-    return get_pages(str(DASHBOARD / "Home.py"))
+def test_nav_entries_cover_every_page_file():
+    """NAV_ENTRIES must list every file in app_pages/, and only those — a
+    missed entry is a page nobody can navigate to; a stale one is a dead
+    sidebar link once the file it pointed at is gone."""
+    on_disk = {f"app_pages/{p.name}" for p in (DASHBOARD / "app_pages").glob("*.py")
+               if p.name != "__init__.py"}
+    listed = {path for path, _ in NAV_ENTRIES}
+    assert listed == on_disk, f"NAV_ENTRIES / app_pages/ mismatch: " \
+        f"missing={on_disk - listed} stale={listed - on_disk}"
 
 
-def test_sidebar_labels_are_spanish():
-    labels = {
-        Path(info["script_path"]).name: info["page_name"].replace("_", " ")
-        for info in _discovered_pages().values()
-    }
-    for filename, expected in EXPECTED_NAV.items():
-        assert filename in labels, f"{filename} was not discovered by Streamlit"
-        assert labels[filename] == expected, \
-            f"{filename} renders as {labels[filename]!r}, expected {expected!r}"
+def test_nav_keys_have_expected_labels():
+    assert {key for _, key in NAV_ENTRIES} == set(EXPECTED_LABELS), \
+        "app/nav.py's keys and this test's EXPECTED_LABELS have drifted apart"
 
 
-def test_no_english_page_name_survives():
-    leaked = {
-        info["page_name"] for info in _discovered_pages().values()
-        if any(w in info["page_name"] for w in ENGLISH_NAV_WORDS)
-    }
-    assert leaked == set(), f"English nav labels remain: {sorted(leaked)}"
+def test_sidebar_labels_are_spanish_by_default():
+    """nav_label(), not t(): Home.py's router resolves labels through
+    nav_label() specifically, not the general t() path — see its docstring
+    for why calling t() itself in the router crashes a session's first load.
+    set_lang() still drives it correctly since both read the same
+    st.session_state key."""
+    set_lang("es")
+    for _, key in NAV_ENTRIES:
+        es_expected, _ = EXPECTED_LABELS[key]
+        assert nav_label(key) == es_expected, \
+            f"{key!r} renders as {nav_label(key)!r} in Spanish, expected {es_expected!r}"
+
+
+def test_sidebar_labels_follow_the_language_toggle_to_english():
+    """The switch is real, not a one-way rewrite — same property
+    test_kpi_numbers_stay_anglo_in_english below pins for numbers."""
+    set_lang("en")
+    for _, key in NAV_ENTRIES:
+        _, en_expected = EXPECTED_LABELS[key]
+        assert nav_label(key) == en_expected, \
+            f"{key!r} renders as {nav_label(key)!r} in English, expected {en_expected!r}"
+
+
+def test_nav_label_falls_back_to_english_before_any_page_has_run():
+    """The one approximation nav_label() makes: a brand new session, before
+    any page has resolved and cached the mission's real default language,
+    shows English rather than reading AGENT_CONFIG itself (see its
+    docstring for why). Pin that fallback explicitly so it can't drift into
+    an exception or a stale mission's language."""
+    st.session_state.pop("pmg_lang", None)
+    st.session_state.pop("pmg_lang_default", None)
+    assert nav_label("Goals") == "Goals"
 
 
 def test_accented_filenames_are_nfc_normalised():
@@ -77,7 +125,7 @@ def test_accented_filenames_are_nfc_normalised():
     other means Streamlit finds no page at that path at all — a blank sidebar
     entry on Cloud that never reproduces locally. Pin the encoding.
     """
-    for path in (DASHBOARD / "pages").glob("*.py"):
+    for path in (DASHBOARD / "app_pages").glob("*.py"):
         assert unicodedata.is_normalized("NFC", path.name), \
             f"{path.name!r} is not NFC-normalised"
 
@@ -87,7 +135,7 @@ def test_every_page_file_is_importable_after_the_rename():
     import. tests/test_isolation.py checks the targets resolve; this checks the
     files themselves still parse."""
     import ast
-    for path in (DASHBOARD / "pages").glob("*.py"):
+    for path in (DASHBOARD / "app_pages").glob("*.py"):
         ast.parse(path.read_text(encoding="utf-8"))
 
 
@@ -159,7 +207,7 @@ def test_kpi_numbers_use_chilean_separators():
     and it looks like a perfectly ordinary number."""
     _TABS["DASHBOARD_SUMMARY"] = _big_number_summary()
 
-    at = AppTest.from_file("pages/01_Panel.py", default_timeout=120)
+    at = AppTest.from_file("app_pages/01_Panel.py", default_timeout=120)
     at.session_state["pmg_lang"] = "es"
     at.run()
     assert not at.exception, at.exception
@@ -177,7 +225,7 @@ def test_kpi_numbers_stay_anglo_in_english():
     """The switch is real, not a one-way rewrite."""
     _TABS["DASHBOARD_SUMMARY"] = _big_number_summary()
 
-    at = AppTest.from_file("pages/01_Panel.py", default_timeout=120)
+    at = AppTest.from_file("app_pages/01_Panel.py", default_timeout=120)
     at.session_state["pmg_lang"] = "en"
     at.run()
     assert not at.exception, at.exception
@@ -187,7 +235,7 @@ def test_kpi_numbers_stay_anglo_in_english():
 def test_language_defaults_to_spanish_from_agent_config():
     """MISSION_LANGUAGE is ES. Nobody should have to find the toggle to read
     their own mission's dashboard in their own language."""
-    at = AppTest.from_file("pages/01_Panel.py", default_timeout=120)
+    at = AppTest.from_file("app_pages/01_Panel.py", default_timeout=120)
     at.run()          # deliberately NOT setting pmg_lang
     assert not at.exception, at.exception
     assert at.session_state["pmg_lang_default"] == "es"
@@ -195,7 +243,7 @@ def test_language_defaults_to_spanish_from_agent_config():
 
 def test_spanish_page_shows_no_english_month_names():
     """strftime('%B')/'%b' emit English whatever the interface language is."""
-    at = AppTest.from_file("pages/02_Metas.py", default_timeout=120)
+    at = AppTest.from_file("app_pages/02_Metas.py", default_timeout=120)
     at.session_state["pmg_lang"] = "es"
     at.run()
     assert not at.exception, at.exception

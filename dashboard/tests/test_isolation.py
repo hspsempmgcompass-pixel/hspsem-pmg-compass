@@ -62,12 +62,12 @@ def test_no_provo_sheet_reference():
 
 def test_cut_pages_absent():
     for name in CUT_PAGES:
-        assert not (ROOT / "pages" / name).exists(), f"{name} should be cut"
+        assert not (ROOT / "app_pages" / name).exists(), f"{name} should be cut"
 
 
 def test_miracles_removed():
-    assert not (ROOT / "pages" / "15_Suggestions_&_Miracles.py").exists()
-    p = ROOT / "pages" / "15_Sugerencias.py"
+    assert not (ROOT / "app_pages" / "15_Suggestions_&_Miracles.py").exists()
+    p = ROOT / "app_pages" / "15_Sugerencias.py"
     assert p.exists(), "page should be renamed to 15_Sugerencias.py"
     assert "miracle_pdf" not in p.read_text(encoding="utf-8-sig")
     assert not (ROOT / "app" / "export").exists()

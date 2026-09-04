@@ -10,7 +10,7 @@ def _empty_sheets(monkeypatch):
 
 
 def test_home_renders_a_language_switch():
-    at = AppTest.from_file("Home.py", default_timeout=60)
+    at = AppTest.from_file("app_pages/00_Home.py", default_timeout=60)
     at.run()
     assert not at.exception
     labels = [r.label for r in at.radio]
@@ -19,14 +19,14 @@ def test_home_renders_a_language_switch():
 
 
 def test_switch_sets_session_state():
-    at = AppTest.from_file("Home.py", default_timeout=60)
+    at = AppTest.from_file("app_pages/00_Home.py", default_timeout=60)
     at.run()
     at.radio[0].set_value("Español").run()
     assert at.session_state["pmg_lang"] == "es"
 
 
 def test_language_persists_to_another_page():
-    at = AppTest.from_file("pages/01_Panel.py", default_timeout=60)
+    at = AppTest.from_file("app_pages/01_Panel.py", default_timeout=60)
     at.session_state["pmg_lang"] = "es"
     at.run()
     assert not at.exception
@@ -41,7 +41,7 @@ def test_mirrored_switches_agree_after_one_is_changed():
     with the corrected default. If that behavior ever changes, the untouched
     mirror would report the old language and drive it back - an endless rerun
     between the two. Assert both mirrors read Spanish after one was clicked."""
-    at = AppTest.from_file("Home.py", default_timeout=60)
+    at = AppTest.from_file("app_pages/00_Home.py", default_timeout=60)
     at.run()
     assert len(at.radio) >= 2, "expected a language radio on Home and in the sidebar"
     at.radio[0].set_value("Español").run()

@@ -41,7 +41,7 @@ def _run(page, lang):
 
 
 def test_home_renders_spanish():
-    es = _text(_run("Home.py", "es"))
+    es = _text(_run("app_pages/00_Home.py", "es"))
     assert "Asistente de la Misión" in es
     assert "Guía de la Aplicación" in es
     assert "Recargar" in es
@@ -49,19 +49,19 @@ def test_home_renders_spanish():
 
 
 def test_home_still_renders_english():
-    en = _text(_run("Home.py", "en"))
+    en = _text(_run("app_pages/00_Home.py", "en"))
     assert "Mission Assistant" in en
     assert "Asistente de la Misión" not in en
 
 
 def test_dashboard_renders_spanish():
-    es = _text(_run("pages/01_Panel.py", "es"))
+    es = _text(_run("app_pages/01_Panel.py", "es"))
     assert "Panel Ejecutivo" in es
     assert "Executive Dashboard" not in es
 
 
 def test_breakdowns_renders_spanish():
-    es = _text(_run("pages/04_Desgloses.py", "es"))
+    es = _text(_run("app_pages/04_Desgloses.py", "es"))
     assert "Desgloses" in es
     assert "Zone, District & Area Performance" not in es
 
@@ -75,12 +75,12 @@ def _all_pages() -> list[str]:
     the directory makes coverage automatic.
     """
     from pathlib import Path
-    pages_dir = Path(__file__).resolve().parent.parent / "pages"
+    pages_dir = Path(__file__).resolve().parent.parent / "app_pages"
     found = sorted(
-        f"pages/{p.name}" for p in pages_dir.glob("*.py")
+        f"app_pages/{p.name}" for p in pages_dir.glob("*.py")
         if p.name != "__init__.py"
     )
-    return ["Home.py"] + found
+    return found
 
 
 ALL_PAGES = _all_pages()
@@ -95,8 +95,8 @@ def test_every_page_survives_both_languages(page):
 
 
 def test_notes_and_suggestions_render_spanish():
-    assert "Filtrar Notas" in _text(_run("pages/10_Notas.py", "es"))
-    assert "Sugerencias" in _text(_run("pages/15_Sugerencias.py", "es"))
+    assert "Filtrar Notas" in _text(_run("app_pages/10_Notas.py", "es"))
+    assert "Sugerencias" in _text(_run("app_pages/15_Sugerencias.py", "es"))
 
 
 def test_suggestion_status_filter_sends_english_to_the_sheet(monkeypatch):
@@ -114,7 +114,7 @@ def test_suggestion_status_filter_sends_english_to_the_sheet(monkeypatch):
         return real(*a, **k)
 
     monkeypatch.setattr(q, "get_suggestions", spy)
-    at = AppTest.from_file("pages/15_Sugerencias.py", default_timeout=90)
+    at = AppTest.from_file("app_pages/15_Sugerencias.py", default_timeout=90)
     at.session_state["pmg_lang"] = "es"
     at.run()
     assert not at.exception
@@ -125,14 +125,14 @@ def test_suggestion_status_filter_sends_english_to_the_sheet(monkeypatch):
 
 
 def test_scores_page_renders_spanish():
-    es = _text(_run("pages/06_Puntajes.py", "es"))
+    es = _text(_run("app_pages/06_Puntajes.py", "es"))
     assert "Puntajes" in es
 
 
 def test_sign_out_is_translated_on_every_page():
     """render_sidebar is shared, so a miss here would leave English chrome on
     all ten pages at once."""
-    assert "Cerrar sesión" in _text(_run("Home.py", "es"))
+    assert "Cerrar sesión" in _text(_run("app_pages/00_Home.py", "es"))
 
 
 @pytest.mark.parametrize("page", ALL_PAGES)

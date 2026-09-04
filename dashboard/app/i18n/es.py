@@ -50,6 +50,11 @@ ES: dict[str, str] = {
     "PMG Compass": "PMG Compass",
 
     # ── Home / assistant ─────────────────────────────────────────────────────
+    "Home": "Inicio",
+    # Identical in both languages — kept as an explicit self-map (like "PMG
+    # Compass" above) so the nav-coverage test tracks it as a deliberate
+    # decision rather than a gap.
+    "Panel": "Panel",
     _APP_GUIDE_EN: _APP_GUIDE_ES,
     "App Guide — what each page does":
         "Guía de la Aplicación — qué hace cada página",
