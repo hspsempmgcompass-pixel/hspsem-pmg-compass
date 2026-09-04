@@ -27,11 +27,11 @@ jobs:
       - name: Run roster pull (tracked)
         working-directory: dashboard
         env:
-          CCSM_IMOS_USERNAME: ${{ secrets.CCSM_IMOS_USERNAME }}
-          CCSM_IMOS_PASSWORD: ${{ secrets.CCSM_IMOS_PASSWORD }}
-          IMOS_HEADLESS: "true"
+          HSPSE_IMOS_USERNAME: ${{ secrets.HSPSE_IMOS_USERNAME }}
+          HSPSE_IMOS_PASSWORD: ${{ secrets.HSPSE_IMOS_PASSWORD }}
+          HSPSE_IMOS_HEADLESS: "true"
           GOOGLE_SHEETS_CREDENTIALS_JSON: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS_JSON }}
-          COMPASS_SHEET_NAME: COMPASS_CCSM
+          COMPASS_SHEET_NAME: COMPASS_HSPSE
         run: >
           python -m app.ingestion.cloud_job_wrapper
           --job-id "${{ inputs.job_id }}" --job-type transfer_pull
