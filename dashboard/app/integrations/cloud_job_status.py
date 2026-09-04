@@ -1,10 +1,10 @@
 """
 cloud_job_status.py — read/write helper for the CLOUD_JOB_STATUS sheet tab in
-COMPASS_CCSM. Shared status channel between the dashboard (wherever it's
+COMPASS_HSPSE. Shared status channel between the dashboard (wherever it's
 running) and GitHub Actions workflows.
 
 Ported from Utah Provo's app/integrations/cloud_job_status.py, adapted to open
-the sheet by NAME (COMPASS_SHEET_NAME) rather than by ID — matching CCSM's
+the sheet by NAME (COMPASS_SHEET_NAME) rather than by ID — matching this app's
 own convention everywhere else (app/db/sheets_client.py), and avoiding the
 need for a separate COMPASS_SHEET_ID secret Provo's version required.
 

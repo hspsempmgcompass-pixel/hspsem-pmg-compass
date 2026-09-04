@@ -1,5 +1,5 @@
 """
-imos_transfer_runner.py — CLI entry point for CCSM's transfer roster
+imos_transfer_runner.py — CLI entry point for HSPSE's transfer roster
 automation. Runs standalone (GitHub Actions or a local shell), no Streamlit
 context — so it authenticates to Sheets directly via
 GOOGLE_SHEETS_CREDENTIALS_JSON rather than through app.db.sheets_client
@@ -9,7 +9,7 @@ Usage:
     python -m app.ingestion.imos_transfer_runner
 
 Downloads the Organization Roster from imos.churchofjesuschrist.org,
-transforms it into TRANSFER_IMPORT rows, and writes them to COMPASS_CCSM's
+transforms it into TRANSFER_IMPORT rows, and writes them to COMPASS_HSPSE's
 TRANSFER_IMPORT tab. Never calls apply()/form_sync() — the mission office
 still reviews and applies from the Traslados page.
 
@@ -24,7 +24,7 @@ from pathlib import Path
 import gspread
 from google.oauth2.service_account import Credentials
 
-from app.ingestion import ccsm_ingestion_settings as settings
+from app.ingestion import hspse_ingestion_settings as settings
 from app.ingestion.imos_portal import download_organization_roster_and_emails
 from app.ingestion.transfer_roster_transform import transform_roster
 from app.utils.logger import get_logger
@@ -78,7 +78,7 @@ def _write_transfer_import(rows: list[dict]) -> int:
 
 def main() -> None:
     if not settings.IMOS_USERNAME or not settings.IMOS_PASSWORD:
-        _logger.error("CCSM_IMOS_USERNAME/CCSM_IMOS_PASSWORD not set — aborting.")
+        _logger.error("HSPSE_IMOS_USERNAME/HSPSE_IMOS_PASSWORD not set — aborting.")
         sys.exit(1)
 
     with tempfile.TemporaryDirectory() as tmp:

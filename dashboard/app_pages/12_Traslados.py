@@ -11,7 +11,7 @@ was cut rather than ported.
 
 What CCSM does have is TRANSFER_SCHEDULE (Transfer_Number | Start_Date | Weeks |
 Status), TRANSFER_START_DATE in AGENT_CONFIG, MISSION_ORG's roster, and
-LIVE_SNAPSHOT's `<metric>_transfer` columns — which CCSM_Agent3 computes from
+LIVE_SNAPSHOT's `<metric>_transfer` columns — which HSPSEM_Agent3 computes from
 TRANSFER_START_DATE through today. That is enough to answer the questions a
 transfer actually raises: which week are we in, who is where, and how has each
 area done since it started.
@@ -60,7 +60,7 @@ from app.integrations.transfer_bridge import FormSyncError, form_sync
 from app.utils.area_helpers import mission_today
 
 st.set_page_config(
-    page_title="CCSM · Traslados — PMG Compass",
+    page_title="HSPSE · Traslados — PMG Compass",
     page_icon="",
     layout="wide",
 )
@@ -111,7 +111,7 @@ def _render_schedule_tab() -> None:
     rows = _transfer_rows()
 
     # Fall back to AGENT_CONFIG when TRANSFER_SCHEDULE has not been filled in.
-    # That is the same value CCSM_Agent3 uses for its transfer-to-date
+    # That is the same value HSPSEM_Agent3 uses for its transfer-to-date
     # totals, so the window described here and the numbers below always agree.
     fallback_start = (get_config_value("TRANSFER_START_DATE", "") or "").strip()[:10]
 
@@ -190,7 +190,7 @@ def _render_schedule_tab() -> None:
 
     st.caption(
         t("Totals from the start of the transfer through today, as "
-          "CCSM_Agent3 computes them into LIVE_SNAPSHOT. Non-numeric "
+          "HSPSEM_Agent3 computes them into LIVE_SNAPSHOT. Non-numeric "
           "questions are left out — a running sum of a Sí/No or Todo/Algo "
           "answer means nothing.")
     )
@@ -199,7 +199,7 @@ def _render_schedule_tab() -> None:
 
     if snap.empty:
         st.info(
-            t("LIVE_SNAPSHOT is empty. CCSM_Agent3 rebuilds it on each run "
+            t("LIVE_SNAPSHOT is empty. HSPSEM_Agent3 rebuilds it on each run "
               "from DAILY_LOG — check Agent Runs on the Mantenimiento page.")
         )
     else:

@@ -4,7 +4,7 @@ rows produced by transfer_roster_transform.build_transfer_rows.
 
 Ported from Utah Provo's app/ingestion/transfer_sheets_writer.py, adapted to
 call app.db.sheets_client.overwrite_tab() instead of the raw Sheets API —
-CCSM's sheets_client already has an equivalent clear+rewrite helper, so no
+HSPSE's sheets_client already has an equivalent clear+rewrite helper, so no
 separate googleapiclient/service-account plumbing is needed here.
 
 Mirrors the manual process's "select all, delete, paste" step exactly: one

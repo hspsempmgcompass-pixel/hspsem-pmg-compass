@@ -334,7 +334,7 @@ ES: dict[str, str] = {
     "No suggestions match the current filters.":
         "Ninguna sugerencia coincide con los filtros actuales.",
     # Approval statuses. The Spanish is shown; the English value is what stays
-    # in COMPASS_CCSM and what the Apps Script agents read.
+    # in COMPASS_HSPSE and what the Apps Script agents read.
     "Pending": "Pendiente",
     "AP Approval": "Aprobación de los AP",
     "Mission President Approval": "Aprobación del Presidente de Misión",
@@ -437,11 +437,11 @@ ES: dict[str, str] = {
         "en Apps Script para calcularlos de inmediato.",
     "Scores are automatically recomputed each Sunday at 11 PM Mountain Time by "
     "the AgentScores Apps Script engine. To trigger an immediate recalculation, "
-    "open the Google Apps Script editor for COMPASS_CCSM and run "
+    "open the Google Apps Script editor for COMPASS_HSPSE and run "
     "computeAllAreaScores().":
         "Los puntajes se recalculan automáticamente cada domingo a las 11 PM (hora "
         "de la montaña) mediante el motor AgentScores de Apps Script. Para forzar un "
-        "recálculo inmediato, abra el editor de Google Apps Script de COMPASS_CCSM y "
+        "recálculo inmediato, abra el editor de Google Apps Script de COMPASS_HSPSE y "
         "ejecute computeAllAreaScores().",
 
     # ── Metric tabs and summaries ────────────────────────────────────────────
@@ -789,15 +789,15 @@ ES: dict[str, str] = {
         "Si los agentes dejaron de ejecutarse o los correos dejaron de enviarse",
     "Everything This System Is Connected To":
         "Todo lo que Está Conectado a Este Sistema",
-    "If the app is ever wrong or down, COMPASS_CCSM is the source of truth — "
+    "If the app is ever wrong or down, COMPASS_HSPSE is the source of truth — "
     "everything the mission reports lives there.":
-        "Si la aplicación alguna vez se equivoca o deja de funcionar, COMPASS_CCSM es la "
+        "Si la aplicación alguna vez se equivoca o deja de funcionar, COMPASS_HSPSE es la "
         "fuente de verdad — todo lo que reporta la misión vive ahí.",
     "A required tab going missing usually means someone renamed or deleted it in "
-    "COMPASS_CCSM. Restore the exact name — agents and this app look tabs up by "
+    "COMPASS_HSPSE. Restore the exact name — agents and this app look tabs up by "
     "name.":
         "Que falte una pestaña requerida suele significar que alguien la renombró o "
-        "eliminó en COMPASS_CCSM. Restaure el nombre exacto — los agentes y esta "
+        "eliminó en COMPASS_HSPSE. Restaure el nombre exacto — los agentes y esta "
         "aplicación buscan las pestañas por nombre.",
 
     # ── Maintenance: app controls ────────────────────────────────────────────
@@ -811,10 +811,10 @@ ES: dict[str, str] = {
     "Data cache cleared — pages will refetch on next load.":
         "Caché de datos borrada — las páginas volverán a consultar en la próxima carga.",
     "Drops all 5-minute cached reads so every page refetches live from "
-    "COMPASS_CCSM. Use when the Sheet was just edited and pages still show old "
+    "COMPASS_HSPSE. Use when the Sheet was just edited and pages still show old "
     "numbers.":
         "Descarta todas las lecturas en caché de 5 minutos para que cada página vuelva a "
-        "consultar en vivo desde COMPASS_CCSM. Úselo cuando la hoja acaba de editarse y "
+        "consultar en vivo desde COMPASS_HSPSE. Úselo cuando la hoja acaba de editarse y "
         "las páginas siguen mostrando números antiguos.",
     "Reset Google Sheets connection": "Restablecer la conexión con Google Sheets",
     "Connection reset — it will reconnect on next read.":
@@ -833,7 +833,7 @@ ES: dict[str, str] = {
     "Sheets. No manual refresh is needed.":
         "Los datos de PMG Compass se actualizan automáticamente todos los días al "
         "mediodía desde Google Sheets. No hace falta actualizar manualmente.",
-    "Open COMPASS_CCSM ↗": "Abrir COMPASS_CCSM ↗",
+    "Open COMPASS_HSPSE ↗": "Abrir COMPASS_HSPSE ↗",
     "Nightly form ↗": "Formulario nocturno ↗",
     "Weekly form ↗": "Formulario semanal ↗",
 
@@ -967,13 +967,13 @@ ES: dict[str, str] = {
         "mostrar una métrica totalmente nueva.",
     "The question-sync web app isn't deployed yet, so pushing from here is "
     "disabled. One-time setup: paste **docs/FormQuestionSyncWebApp.gs** into the "
-    "COMPASS_CCSM Apps Script editor, deploy it as a web app, then add "
+    "COMPASS_HSPSE Apps Script editor, deploy it as a web app, then add "
     "QUESTION_SYNC_WEBAPP_URL and QUESTION_SYNC_WEBAPP_SECRET to this app's "
     "secrets. Until then, form questions have to be edited in the Google Forms "
     "editor by hand.":
         "La aplicación web de sincronización de preguntas aún no está desplegada, así que "
         "el envío desde aquí está deshabilitado. Configuración por única vez: pegue "
-        "**docs/FormQuestionSyncWebApp.gs** en el editor de Apps Script de COMPASS_CCSM, "
+        "**docs/FormQuestionSyncWebApp.gs** en el editor de Apps Script de COMPASS_HSPSE, "
         "despliéguelo como aplicación web, y luego agregue QUESTION_SYNC_WEBAPP_URL y "
         "QUESTION_SYNC_WEBAPP_SECRET a los secretos de esta aplicación. Hasta entonces, "
         "las preguntas del formulario deben editarse a mano en el editor de Google Forms.",
@@ -1015,17 +1015,17 @@ ES: dict[str, str] = {
     "Areas Involved": "Áreas Involucradas",
 
     # The architecture overview block on the Maintenance page.
-    "- **COMPASS_CCSM (Google Sheet)** — the only data store. Every tab the "
+    "- **COMPASS_HSPSE (Google Sheet)** — the only data store. Every tab the "
     "agents and this app read or write lives there (link above).\n"
     "- **Google Forms** — the nightly + weekly report forms (links above) write "
     "into NIGHTLY_FORM_RAW / WEEKLY_FORM_RAW; the Questions & Suggestions form "
     "feeds AgentQA.\n"
-    "- **Apps Script agents** — live *inside* COMPASS_CCSM (Extensions → Apps "
+    "- **Apps Script agents** — live *inside* COMPASS_HSPSE (Extensions → Apps "
     "Script). The table below lists them; `docs/` in the git repo holds "
     "reference copies, but **only code pasted into the online editor actually "
     "runs**.\n"
     "- **This app (Streamlit Cloud)** — auto-deploys the `main` branch. Reads "
-    "COMPASS_CCSM via the service account; writes Notes, Score Config, and the "
+    "COMPASS_HSPSE via the service account; writes Notes, Score Config, and the "
     "tabs this page edits.\n"
     "- **GitHub Actions** — cloud buttons in this app dispatch "
     "`transfer-roster-pull.yml` (portal roster → TRANSFER_IMPORT), "
@@ -1033,17 +1033,17 @@ ES: dict[str, str] = {
     "`tableau-reports.yml` (quarterly Tableau exports).\n"
     "- **Gemini API** — the Home-page chatbot, AgentQA's auto-answers, and "
     "Agent1C's leadership narratives.":
-        "- **COMPASS_CCSM (Google Sheet)** — el único almacén de datos. Cada pestaña que "
+        "- **COMPASS_HSPSE (Google Sheet)** — el único almacén de datos. Cada pestaña que "
         "los agentes y esta aplicación leen o escriben vive ahí (enlace arriba).\n"
         "- **Google Forms** — los formularios de reporte nocturno y semanal (enlaces "
         "arriba) escriben en NIGHTLY_FORM_RAW / WEEKLY_FORM_RAW; el formulario de "
         "Preguntas y Sugerencias alimenta a AgentQA.\n"
-        "- **Agentes de Apps Script** — viven *dentro* de COMPASS_CCSM (Extensiones → "
+        "- **Agentes de Apps Script** — viven *dentro* de COMPASS_HSPSE (Extensiones → "
         "Apps Script). La tabla de abajo los lista; `docs/` en el repositorio git "
         "contiene copias de referencia, pero **solo el código pegado en el editor en "
         "línea se ejecuta realmente**.\n"
         "- **Esta aplicación (Streamlit Cloud)** — se despliega automáticamente desde la "
-        "rama `main`. Lee COMPASS_CCSM mediante la cuenta de servicio; escribe Notas, la "
+        "rama `main`. Lee COMPASS_HSPSE mediante la cuenta de servicio; escribe Notas, la "
         "Configuración de Puntajes y las pestañas que edita esta página.\n"
         "- **GitHub Actions** — los botones en la nube de esta aplicación disparan "
         "`transfer-roster-pull.yml` (lista del portal → TRANSFER_IMPORT), "
@@ -1059,7 +1059,7 @@ ES: dict[str, str] = {
     "forces the latest commit from `main` to deploy.\n"
     "4. **Check secrets**: Streamlit Cloud → app → Settings → Secrets must "
     "contain the service account, COMPASS_SHEET_NAME, and GEMINI_API_KEY. The "
-    "service account email must have access to COMPASS_CCSM (share the Sheet "
+    "service account email must have access to COMPASS_HSPSE (share the Sheet "
     "with it).\n"
     "5. **No data at all?** The agents write the tabs this app reads — check "
     "Agent Runs (To-Do & Health tab) and Apps Script triggers, not the app.":
@@ -1071,13 +1071,13 @@ ES: dict[str, str] = {
         "Reboot. También fuerza el despliegue del último commit de `main`.\n"
         "4. **Revise los secretos**: Streamlit Cloud → aplicación → Settings → Secrets "
         "debe contener la cuenta de servicio, COMPASS_SHEET_NAME y GEMINI_API_KEY. El "
-        "correo de la cuenta de servicio debe tener acceso a COMPASS_CCSM (comparta la "
+        "correo de la cuenta de servicio debe tener acceso a COMPASS_HSPSE (comparta la "
         "hoja con él).\n"
         "5. **¿No hay datos en absoluto?** Los agentes escriben las pestañas que lee esta "
         "aplicación — revise las Ejecuciones de Agentes (pestaña Tareas y Estado) y los "
         "activadores de Apps Script, no la aplicación.",
 
-    "1. Open COMPASS_CCSM → **Extensions → Apps Script → Triggers** (clock icon) "
+    "1. Open COMPASS_HSPSE → **Extensions → Apps Script → Triggers** (clock icon) "
     "and confirm each agent's time-driven trigger still exists.\n"
     "2. Check **Executions** in the same editor for red failed runs — the stack "
     "trace there is more detailed than AGENT_RUN_LOG.\n"
@@ -1088,7 +1088,7 @@ ES: dict[str, str] = {
     "5. ⚠️ **Code changes**: editing `docs/*.gs` in the git repo does NOT change "
     "the live agents. Live code is only what's pasted into the Apps Script "
     "editor — every fix must be copy-pasted there by hand.":
-        "1. Abra COMPASS_CCSM → **Extensiones → Apps Script → Activadores** (icono de "
+        "1. Abra COMPASS_HSPSE → **Extensiones → Apps Script → Activadores** (icono de "
         "reloj) y confirme que el activador por tiempo de cada agente todavía existe.\n"
         "2. Revise **Ejecuciones** en el mismo editor en busca de ejecuciones fallidas en "
         "rojo — el seguimiento de la pila ahí es más detallado que AGENT_RUN_LOG.\n"
@@ -1182,8 +1182,8 @@ ES: dict[str, str] = {
     "been missed.":
         "La última semana de WEEKLY_KI terminó hace {wk_age} días — puede que se "
         "haya omitido un ciclo semanal.",
-    "COMPASS_CCSM link unavailable — {e}":
-        "Enlace a COMPASS_CCSM no disponible — {e}",
+    "COMPASS_HSPSE link unavailable — {e}":
+        "Enlace a COMPASS_HSPSE no disponible — {e}",
     "Add to Knowledge Base as {next_id}":
         "Agregar a la Base de Conocimiento como {next_id}",
     "**Other / both forms** — {count} question(s)":
@@ -1359,9 +1359,9 @@ ES: dict[str, str] = {
     "{start} to {end}": "{start} al {end}",
     "Week total": "Total de la semana",
     "Per area / day": "Por área / día",
-    "No scores for this week yet. CCSM_AgentScores writes them on its weekly "
+    "No scores for this week yet. HSPSEM_AgentScores writes them on its weekly "
     "run.":
-        "Aún no hay puntajes para esta semana. CCSM_AgentScores los escribe "
+        "Aún no hay puntajes para esta semana. HSPSEM_AgentScores los escribe "
         "en su ejecución semanal.",
     "Skill": "Habilidad",
     "Effectiveness": "Efectividad",
@@ -1416,15 +1416,15 @@ ES: dict[str, str] = {
     "Ends": "Termina",
     "Current": "Actual",
     "Area Performance This Transfer": "Desempeño por Área en Este Traslado",
-    "Totals from the start of the transfer through today, as CCSM_Agent3 "
+    "Totals from the start of the transfer through today, as HSPSEM_Agent3 "
     "computes them into LIVE_SNAPSHOT. Non-numeric questions are left out — a "
     "running sum of a Sí/No or Todo/Algo answer means nothing.":
         "Totales desde el inicio del traslado hasta hoy, tal como "
-        "CCSM_Agent3 los calcula en LIVE_SNAPSHOT. Se excluyen las preguntas "
+        "HSPSEM_Agent3 los calcula en LIVE_SNAPSHOT. Se excluyen las preguntas "
         "no numéricas — sumar respuestas Sí/No o Todo/Algo no significa nada.",
-    "LIVE_SNAPSHOT is empty. CCSM_Agent3 rebuilds it on each run from "
+    "LIVE_SNAPSHOT is empty. HSPSEM_Agent3 rebuilds it on each run from "
     "DAILY_LOG — check Agent Runs on the Mantenimiento page.":
-        "LIVE_SNAPSHOT está vacía. CCSM_Agent3 la reconstruye en cada "
+        "LIVE_SNAPSHOT está vacía. HSPSEM_Agent3 la reconstruye en cada "
         "ejecución a partir de DAILY_LOG — revise Ejecuciones de Agentes en "
         "la página Mantenimiento.",
     "LIVE_SNAPSHOT has no transfer-to-date columns yet. They appear once the "
@@ -1581,16 +1581,16 @@ ES: dict[str, str] = {
     "DAILY_LOG has no Area column, so it cannot be broken down by area.":
         "DAILY_LOG no tiene columna Area, por lo que no se puede desglosar por área.",
     "None of this mission's nightly metrics appear in DAILY_LOG. Check the "
-    "QUESTIONS_CONFIG tab of COMPASS_CCSM, then re-run the nightly refresh.":
+    "QUESTIONS_CONFIG tab of COMPASS_HSPSE, then re-run the nightly refresh.":
         "Ninguna de las métricas diarias de esta misión aparece en DAILY_LOG. "
-        "Revise la pestaña QUESTIONS_CONFIG de COMPASS_CCSM y vuelva a ejecutar "
+        "Revise la pestaña QUESTIONS_CONFIG de COMPASS_HSPSE y vuelva a ejecutar "
         "la actualización diaria.",
     "No metrics are configured for this mission, so there is nothing to "
     "weight. Check the QUESTIONS_CONFIG and SCORE_CONFIG tabs of "
-    "COMPASS_CCSM before editing score weights.":
+    "COMPASS_HSPSE before editing score weights.":
         "Esta misión no tiene métricas configuradas, así que no hay nada que "
         "ponderar. Revise las pestañas QUESTIONS_CONFIG y SCORE_CONFIG de "
-        "COMPASS_CCSM antes de editar los pesos del puntaje.",
+        "COMPASS_HSPSE antes de editar los pesos del puntaje.",
     "Weekly-form Key Indicators. Metrics left at 0 don't count toward KI.":
         "Indicadores Clave del formulario semanal. Las métricas en 0 no cuentan "
         "para el puntaje de Indicadores Clave.",

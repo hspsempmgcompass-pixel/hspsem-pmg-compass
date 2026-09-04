@@ -1,15 +1,18 @@
-"""github_actions.py — fires workflow_dispatch events against CCSM's own
+"""github_actions.py — fires workflow_dispatch events against HSPSE's own
 GitHub Actions workflows.
 
-Ported from Utah Provo's app/integrations/github_actions.py, with _API_BASE
-repointed from pmgcompass-upm/PMG-Compass to CCSM's own repo.
+Ported from Utah Provo's app/integrations/github_actions.py (via CCSM's
+fork), with _API_BASE repointed from pmgcompass-upm/PMG-Compass — then from
+CCSM's own repo — to HSPSE's own: hspsempmgcompass-pixel/hspsem-pmg-compass
+(confirmed 2026-09-04: .github/workflows/transfer-roster-pull.yml is live
+there).
 """
 import os
 import subprocess
 
 import requests
 
-_API_BASE = "https://api.github.com/repos/ccsmpmgcompass-collab/ccsm-pmg-compass"
+_API_BASE = "https://api.github.com/repos/hspsempmgcompass-pixel/hspsem-pmg-compass"
 
 
 class DispatchError(Exception):

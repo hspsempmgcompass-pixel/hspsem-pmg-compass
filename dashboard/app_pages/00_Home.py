@@ -14,7 +14,7 @@ from app.chat.gemini_chat import (
 )
 
 st.set_page_config(
-    page_title="CCSM · PMG Compass",
+    page_title="HSPSE · PMG Compass",
     page_icon="C",
     layout="wide",
 )

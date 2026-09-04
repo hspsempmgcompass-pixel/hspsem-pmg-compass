@@ -37,7 +37,7 @@ from app.i18n import t
 from app.i18n.formats import NA, fmt_date, fmt_int, fmt_number, fmt_percent
 
 st.set_page_config(
-    page_title="CCSM · Referencias — PMG Compass",
+    page_title="HSPSE · Referencias — PMG Compass",
     page_icon="",
     layout="wide",
 )

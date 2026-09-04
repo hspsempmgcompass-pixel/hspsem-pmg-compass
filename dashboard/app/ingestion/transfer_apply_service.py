@@ -1,14 +1,14 @@
 """
-transfer_apply_service.py — Streamlit-side orchestration for CCSM's Transfer
+transfer_apply_service.py — Streamlit-side orchestration for HSPSE's Transfer
 Flow: reads MISSION_ORG / TRANSFER_IMPORT / TRANSFER_SCHEDULE / AGENT_CONFIG
-from COMPASS_CCSM, runs the pure transfer_engine, and writes the results back.
+from COMPASS_HSPSE, runs the pure transfer_engine, and writes the results back.
 
 Ported from Utah Provo's app/ingestion/transfer_apply_service.py. All Google
 Sheets I/O goes through app.db.sheets_client (gspread service account). The
 pure logic lives in transfer_engine; this module only wires it to the live
 sheet, so it is exercised in the app rather than unit-tested.
 
-CCSM's AGENT_CONFIG has only two columns (Key, Value) — no Config_Key/
+HSPSE's AGENT_CONFIG has only two columns (Key, Value) — no Config_Key/
 Config_Value/Last_Updated like Provo's. _set_transfer_start_date reads
 Key/Value and does not touch a Last_Updated column, since none exists.
 """
@@ -157,7 +157,7 @@ def _advance_schedule(today: date) -> bool:
 
 
 def _set_transfer_start_date(today: date) -> bool:
-    """CCSM's AGENT_CONFIG is a plain Key/Value tab (no Config_Key/Config_Value/
+    """HSPSE's AGENT_CONFIG is a plain Key/Value tab (no Config_Key/Config_Value/
     Last_Updated like Provo's) — updates the Value cell of the TRANSFER_START_DATE
     row and nothing else."""
     grid = sc.read_values(CONFIG_TAB)
@@ -178,7 +178,7 @@ def _set_transfer_start_date(today: date) -> bool:
 
 
 def _log(summary: dict, schedule_updated: bool, config_updated: bool) -> None:
-    parts = ["Applied via CCSM dashboard (Traslados)."]
+    parts = ["Applied via HSPSE dashboard (Traslados)."]
     if summary.get("new_emails_needed"):
         parts.append("NEW areas need email: " + ", ".join(summary["new_emails_needed"]))
     if summary.get("deactivated_with_email"):
@@ -187,7 +187,7 @@ def _log(summary: dict, schedule_updated: bool, config_updated: bool) -> None:
     try:
         sc.append_row(LOG_TAB, [
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "applyTransfer (CCSM dashboard)", "OK", " | ".join(parts),
+            "applyTransfer (HSPSE dashboard)", "OK", " | ".join(parts),
         ])
     except Exception as e:   # logging must never fail the apply
         _logger.warning("Could not append TRANSFER_LOG row: %s", e)

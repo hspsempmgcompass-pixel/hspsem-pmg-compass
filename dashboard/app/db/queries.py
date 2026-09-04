@@ -1,7 +1,7 @@
 """
 queries.py
 ────────────────────────────────────────────────────────────
-All data query functions for COMPASS_CCSM Google Sheets tabs.
+All data query functions for COMPASS_HSPSE Google Sheets tabs.
 No Supabase. No external APIs. Read from Google Sheets only.
 
 Tab schemas
@@ -397,7 +397,7 @@ def get_latest_weekly_ki() -> pd.DataFrame:
 # every other section's columns are blank on that row.
 #
 # These two constants mirror A3_FORM_AREA_COL / A3_FORM_ZONE_COL in
-# CCSM_Agent3.gs. They are structural questions, so unlike the metric columns
+# HSPSEM_Agent3.gs. They are structural questions, so unlike the metric columns
 # they have no QUESTIONS_CONFIG row to read them from.
 # tests/test_weekly_form_parser.py asserts both still match the live header.
 #
@@ -640,7 +640,7 @@ def get_nightly_weekly_trends(n_weeks: int = 52) -> pd.DataFrame:
 
     CCSM's WEEKLY_KI is structurally different from Utah Provo's. Provo derives
     WEEKLY_KI from DAILY_LOG, so it holds nightly rollups and a nightly metric
-    can be trended straight off it. CCSM's CCSM_Agent5A.gs replaced that
+    can be trended straight off it. CCSM's HSPSEM_Agent5A.gs replaced that
     wholesale (see its header, "STRUCTURAL CHANGE vs Provo"): WEEKLY_KI is a
     parse of the weekly form's Real/Meta columns, so it holds ONLY the seven
     ki_* pairs and contains no nightly metric at all.
@@ -650,7 +650,7 @@ def get_nightly_weekly_trends(n_weeks: int = 52) -> pd.DataFrame:
     such column — a projection or trend of nothing.
 
     Weeks end Sunday, matching the Mon–Sun reporting week used everywhere else
-    (see exclude_current_week and CCSM_Agent1A's own week calculation).
+    (see exclude_current_week and HSPSEM_Agent1A's own week calculation).
     """
     df = get_daily_log(days=n_weeks * 7 + 14)
     if df.empty or "Date" not in df.columns:
@@ -939,7 +939,7 @@ def get_live_snapshot() -> pd.DataFrame:
 # ══════════════════════════════════════════════════════════════════════════════
 
 #: Leadership tracking rows in SCORES, matched by Area_Name. Mirrors
-#: asc_isLeadershipRow_ in CCSM_AgentScores.gs. They never submit and score 0,
+#: asc_isLeadershipRow_ in HSPSEM_AgentScores.gs. They never submit and score 0,
 #: so leaving them in drags every mission average down.
 _SCORES_LEADERSHIP_RE = (
     r"^(Mission President|Assistant to President|Zone Leader|"
@@ -1581,7 +1581,7 @@ def _area_type_indicator_defaults() -> dict[str, list[tuple[str, str, float]]]:
     AREA_TYPE_EXPECTATIONS is empty or a category is missing from it.
 
     Built from AGENT_CONFIG's GOAL_* keys — the weekly per-area targets the
-    mission itself set, and the same numbers CCSM_Agent1A.gs coaches against —
+    mission itself set, and the same numbers HSPSEM_Agent1A.gs coaches against —
     rather than a written-down table. There is one group because CCSM is a
     single-language mission (see _language_group).
 
@@ -1920,7 +1920,7 @@ def get_score_component_weights(component: str, area_code: str = "ALL") -> dict[
     """{metric_key: weight} for one SCORE_CONFIG component ('effort', 'skill',
     'ki'), for `area_code` falling back to the mission-wide 'ALL' rows.
 
-    SCORE_CONFIG is the tab CCSM_AgentScores.gs reads to compute the scores it
+    SCORE_CONFIG is the tab HSPSEM_AgentScores.gs reads to compute the scores it
     writes to SCORES, so reading it here is what keeps the dashboard's
     explanation of a score and the agent's calculation of it in agreement. A
     per-area row overrides the 'ALL' row for the same metric — the same
@@ -1978,7 +1978,7 @@ def get_effectiveness_composition_weights(area_code: str = "ALL") -> dict[str, f
 
     That section sits below a blank separator row and is headed
     Area_Code | Effort_Weight | Skill_Weight | KI_Weight. It is the same row
-    CCSM_AgentScores.gs reads, so honouring it is what keeps a recomputed
+    HSPSEM_AgentScores.gs reads, so honouring it is what keeps a recomputed
     Effectiveness score equal to the one the agent wrote to SCORES.
 
     A per-area row wins over the mission-wide 'ALL' row. Falls back to an even
@@ -2035,7 +2035,7 @@ def _effort_metric_weights(area_code: str = "ALL") -> dict[str, float]:
     reads as "no data yet" rather than as a broken calculation.
 
     CCSM's Effort component is defined in SCORE_CONFIG (contacts_attempted,
-    roleplays, member_contacts, effort) and is what CCSM_AgentScores.gs actually
+    roleplays, member_contacts, effort) and is what HSPSEM_AgentScores.gs actually
     uses. Reading the same source means the breakdown EXPLAINS the score the
     agent produced instead of computing a rival one.
     """
@@ -2061,7 +2061,7 @@ def compute_effort_score(
 ) -> float | None:
     """
     Weighted-average Effort score (0-100) over the metrics SCORE_CONFIG assigns
-    to the 'effort' component — the same set and weights CCSM_AgentScores.gs
+    to the 'effort' component — the same set and weights HSPSEM_AgentScores.gs
     uses, so this explains the agent's score rather than computing a rival one.
 
     actuals: metric_key -> actual value, or None if that metric's data source
@@ -2541,7 +2541,7 @@ def get_mission_recommended_goals() -> dict:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# NOTES (read/write to NOTES tab in COMPASS_CCSM)
+# NOTES (read/write to NOTES tab in COMPASS_HSPSE)
 # ══════════════════════════════════════════════════════════════════════════════
 
 _NOTES_HEADER = [
@@ -2830,7 +2830,7 @@ def set_suggestion_status(
 
 
 # get_miracles() was here. It read a tab called "Miracles" — a Google Form
-# response sheet Utah Provo has and COMPASS_CCSM does not. CCSM never adopted
+# response sheet Utah Provo has and COMPASS_HSPSE does not. CCSM never adopted
 # the miracle form (docs/superpowers/specs/2026-07-11-ccsm-sheet-and-agents-
 # design.md cuts the miracle-form utilities; the dashboard design doc cuts the
 # Miracles tab for the same reason), so the only page that called this was
@@ -2878,7 +2878,7 @@ def get_blitz_dates(area: str = None):
 
 def get_tableau_detail() -> tuple:
     """
-    Load persisted Finding Detail CSV from COMPASS_CCSM.
+    Load persisted Finding Detail CSV from COMPASS_HSPSE.
     Returns (df, uploaded_by, uploaded_at) or (empty_df, '', '').
     Row 1 is metadata, row 2 is the real header.
     """
@@ -2898,7 +2898,7 @@ def get_tableau_detail() -> tuple:
 
 def get_tableau_ranking() -> tuple:
     """
-    Load persisted Finding Ranking CSV from COMPASS_CCSM.
+    Load persisted Finding Ranking CSV from COMPASS_HSPSE.
     Returns (df, uploaded_by, uploaded_at) or (empty_df, '', '').
     """
     df = read_tab("TABLEAU_RANKING")

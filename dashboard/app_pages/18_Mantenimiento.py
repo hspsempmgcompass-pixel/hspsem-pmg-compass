@@ -1,7 +1,7 @@
 """
 18_Mantenimiento.py
 PMG Compass | Maintenance
-The mission's back office in one tabbed page — COMPASS_CCSM is meant to be
+The mission's back office in one tabbed page — COMPASS_HSPSE is meant to be
 backend-only, so anything that used to require opening the Sheet should be
 doable here instead:
   ✅ To-Do & Health — weekly checklist, data snapshot, pipeline health, agent runs
@@ -47,7 +47,7 @@ from app.i18n.formats import fmt_date, fmt_day_month, fmt_int
 from app.utils.area_helpers import mission_today
 
 st.set_page_config(
-    page_title="CCSM · Maintenance — PMG Compass",
+    page_title="HSPSE · Maintenance — PMG Compass",
     page_icon="",
     layout="wide",
 )
@@ -261,7 +261,7 @@ if _sec == _TAB_HEALTH:
     # ── Connection & Configuration ────────────────────────────────────────────
     render_section_label(t("Connection & Configuration"))
 
-    # Tabs the app and agents cannot function without. Read from COMPASS_CCSM
+    # Tabs the app and agents cannot function without. Read from COMPASS_HSPSE
     # live so a renamed/deleted tab is caught here before it surfaces as a
     # blank page.
     _REQUIRED_TABS = [
@@ -315,7 +315,7 @@ if _sec == _TAB_HEALTH:
     if _missing_tabs:
         st.caption(
             t("A required tab going missing usually means someone renamed or "
-            "deleted it in COMPASS_CCSM. Restore the exact name — agents and "
+            "deleted it in COMPASS_HSPSE. Restore the exact name — agents and "
             "this app look tabs up by name.")
         )
 
@@ -877,7 +877,7 @@ elif _sec == _TAB_QUESTIONS:
                     # These four are the Data_Type values QUESTIONS_CONFIG
                     # actually holds and the rest of the app branches on
                     # (metric_catalog.non_numeric_metrics / metric_data_type,
-                    # CCSM_Agent1A's parsing). The picker used to offer
+                    # HSPSEM_Agent1A's parsing). The picker used to offer
                     # INTEGER / TEXT / DATE, none of which except DATE is one of
                     # them: a question added as TEXT would be classified numeric
                     # everywhere downstream and its written answers coerced to 0,
@@ -958,7 +958,7 @@ elif _sec == _TAB_QUESTIONS:
                 st.info(
                     t("The question-sync web app isn't deployed yet, so pushing "
                     "from here is disabled. One-time setup: paste "
-                    "**docs/FormQuestionSyncWebApp.gs** into the COMPASS_CCSM "
+                    "**docs/FormQuestionSyncWebApp.gs** into the COMPASS_HSPSE "
                     "Apps Script editor, deploy it as a web app, then add "
                     "QUESTION_SYNC_WEBAPP_URL and QUESTION_SYNC_WEBAPP_SECRET "
                     "to this app's secrets. Until then, form questions have to "
@@ -1007,15 +1007,15 @@ elif _sec == _TAB_QUESTIONS:
 elif _sec == _TAB_SYSTEM:
     render_section_label(t("Quick Links"))
     st.caption(
-        t("If the app is ever wrong or down, COMPASS_CCSM is the source of truth "
+        t("If the app is ever wrong or down, COMPASS_HSPSE is the source of truth "
         "— everything the mission reports lives there.")
     )
     _l1, _l2, _l3 = st.columns(3)
     try:
-        _l1.link_button(t("Open COMPASS_CCSM ↗"), _get_spreadsheet().url,
+        _l1.link_button(t("Open COMPASS_HSPSE ↗"), _get_spreadsheet().url,
                         use_container_width=True)
     except Exception as e:
-        _l1.error(t('COMPASS_CCSM link unavailable — {e}', e=e))
+        _l1.error(t('COMPASS_HSPSE link unavailable — {e}', e=e))
     _nf_link = get_config_value("NIGHTLY_FORM_LINK", "")
     if _nf_link:
         _l2.link_button(t("Nightly form ↗"), _nf_link, use_container_width=True)
@@ -1080,7 +1080,7 @@ elif _sec == _TAB_SYSTEM:
             t("Clear data cache"),
             use_container_width=True,
             help=t("Drops all 5-minute cached reads so every page refetches live "
-                 "from COMPASS_CCSM. Use when the Sheet was just edited and "
+                 "from COMPASS_HSPSE. Use when the Sheet was just edited and "
                  "pages still show old numbers."),
         ):
             st.cache_data.clear()
@@ -1100,17 +1100,17 @@ elif _sec == _TAB_SYSTEM:
     # ── Connected systems ─────────────────────────────────────────────────────
     render_section_label(t("Everything This System Is Connected To"))
     st.markdown(
-        t("- **COMPASS_CCSM (Google Sheet)** — the only data store. Every tab the "
+        t("- **COMPASS_HSPSE (Google Sheet)** — the only data store. Every tab the "
         "agents and this app read or write lives there (link above).\n"
         "- **Google Forms** — the nightly + weekly report forms (links above) "
         "write into NIGHTLY_FORM_RAW / WEEKLY_FORM_RAW; the Questions & "
         "Suggestions form feeds AgentQA.\n"
-        "- **Apps Script agents** — live *inside* COMPASS_CCSM (Extensions → "
+        "- **Apps Script agents** — live *inside* COMPASS_HSPSE (Extensions → "
         "Apps Script). The table below lists them; `docs/` in the git repo "
         "holds reference copies, but **only code pasted into the online editor "
         "actually runs**.\n"
         "- **This app (Streamlit Cloud)** — auto-deploys the `main` branch. "
-        "Reads COMPASS_CCSM via the service account; writes Notes, Score "
+        "Reads COMPASS_HSPSE via the service account; writes Notes, Score "
         "Config, and the tabs this page edits.\n"
         "- **GitHub Actions** — cloud buttons in this app dispatch "
         "`transfer-roster-pull.yml` (portal roster → TRANSFER_IMPORT), "
@@ -1179,7 +1179,7 @@ elif _sec == _TAB_SYSTEM:
             "4. **Check secrets**: Streamlit Cloud → app → Settings → Secrets "
             "must contain the service account, COMPASS_SHEET_NAME, and "
             "GEMINI_API_KEY. The service account email must have access to "
-            "COMPASS_CCSM (share the Sheet with it).\n"
+            "COMPASS_HSPSE (share the Sheet with it).\n"
             "5. **No data at all?** The agents write the tabs this app reads — "
             "check Agent Runs (To-Do & Health tab) and Apps Script triggers, "
             "not the app.")
@@ -1187,7 +1187,7 @@ elif _sec == _TAB_SYSTEM:
 
     with st.expander(t("If agents stopped running or emails stopped sending")):
         st.markdown(
-            t("1. Open COMPASS_CCSM → **Extensions → Apps Script → Triggers** "
+            t("1. Open COMPASS_HSPSE → **Extensions → Apps Script → Triggers** "
             "(clock icon) and confirm each agent's time-driven trigger still "
             "exists.\n"
             "2. Check **Executions** in the same editor for red failed runs — "

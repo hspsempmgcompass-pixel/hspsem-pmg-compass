@@ -2,14 +2,19 @@
 transfer_roster_transform.py — Transforms a raw IMOS "Organization Roster"
 export into TRANSFER_IMPORT rows.
 
-Ported from Utah Provo's app/ingestion/transfer_roster_transform.py.
+Ported from Utah Provo's app/ingestion/transfer_roster_transform.py, via
+CCSM's fork of the same module.
 ZONE_NAME_MAP starts EMPTY — Provo's export needed one because its zone names
 carry a parenthetical code ("Kings Peak (KP)") that doesn't match MISSION_ORG's
 plain-text zone names. CCSM's MISSION_ORG zones (Angol, Arauco, Camilo, Los
 Angeles Norte, Los Angeles Sur, San Pedro, Temuco Cautín, Temuco Ñielol,
-Victoria, Villarrica) have no such code, so there's no known mapping needed
-yet — verify against a real IMOS download (Task 8) before relying on this,
-and add entries here if the export's spelling doesn't match.
+Victoria, Villarrica) had no such code either, so the map stayed empty for
+CCSM too. HSPSE's MISSION_ORG zones (El Carmen, La Ceiba, La Paz, Miramar,
+Olanchito, Palermo, Planeta, Progreso, Santa Rita, Satélite — per the
+2026-08-29 roster parse) also carry no such code as far as confirmed, but —
+same caveat carried forward twice now — this has **not been verified against
+a real HSPSE IMOS download**. Verify before relying on this, and add entries
+here if the export's spelling doesn't match.
 """
 
 from pathlib import Path
@@ -21,10 +26,12 @@ from app.utils.logger import get_logger
 _logger = get_logger("ingestion.transfer_roster_transform")
 
 # Column names as they appear in the raw "Current Organization" Excel export —
-# UNVERIFIED for CCSM (Provo's own file carries the same caveat: these are
-# best-known guesses from Provo's real 2026-07-01 export; CCSM's export
-# format is assumed identical since it's the same IMOS portal, but this has
-# not yet been confirmed against a real CCSM download).
+# UNVERIFIED for HSPSE (both Provo's and CCSM's own copies of this file carry
+# the same caveat: these are best-known guesses from Provo's real 2026-07-01
+# export; HSPSE's export format is assumed identical since it's the same
+# IMOS portal, but this has not yet been confirmed against a real HSPSE
+# download through THIS transform — the 2026-08-29 roster pull used a
+# separate one-off scrape, not this module).
 RAW_HEADER_ROW = 2
 RAW_COL_AREA = "Area"
 RAW_COL_ZONE = "Zone"
@@ -46,13 +53,13 @@ _CALLING_MAP = {
 }
 _CALLING_PRIORITY = ["MP", "AP", "DL", "STL", "ZL"]
 
-# Empty until a real CCSM IMOS export shows a zone-name mismatch — see the
+# Empty until a real HSPSE IMOS export shows a zone-name mismatch — see the
 # module docstring.
 ZONE_NAME_MAP: dict[str, str] = {}
 
-# Starting guess, carried over from Provo's own confirmed set — verify against
-# a real CCSM export and adjust if CCSM's mission office/senior-couple rows
-# use different Zone/District text.
+# Starting guess, carried over from Provo's own confirmed set (via CCSM's
+# fork) — verify against a real HSPSE export and adjust if HSPSE's mission
+# office/senior-couple rows use different Zone/District text.
 _NON_AREA_DISTRICTS = {"office", "other districts", "mp senior"}
 
 
@@ -68,10 +75,12 @@ def _is_non_area_row(zone, district) -> bool:
 
 def _format_name(raw: str) -> str:
     """First Name + Last Name only — drops middle names, handles 'Last, First'
-    order. CCSM's MISSION_ORG already stores companion names in "Last, First
-    Middle" form (confirmed live, e.g. "Rees, Nicolas Clay") — this function's
-    comma-handling branch is what normalizes that into "First Last" for the
-    roster import, same as it does for Provo."""
+    order. CCSM's MISSION_ORG stores companion names in "Last, First Middle"
+    form (confirmed live, e.g. "Rees, Nicolas Clay") — this function's
+    comma-handling branch normalizes that into "First Last" for the roster
+    import, same as it does for Provo. Not yet confirmed whether HSPSE's live
+    MISSION_ORG uses the same "Last, First" convention or Provo's plain
+    "First Last" — verify before trusting this on a real HSPSE roster pull."""
     raw = str(raw).strip()
     if not raw:
         return ""
@@ -88,7 +97,7 @@ def _format_name(raw: str) -> str:
 
 def _pick_companions(names: list, positions: list) -> tuple:
     """Companion1 = the Position=='SC' missionary (or first in file order if
-    no SC present); Companion2/3/4 = everyone else, one name per slot. CCSM's
+    no SC present); Companion2/3/4 = everyone else, one name per slot. HSPSE's
     MISSION_ORG only has 2 companion slots, but a companionship of 3+ is
     still possible in the field (e.g. a trio) — keep the 4-slot ceiling so a
     real trio/quad doesn't raise, even though only slots 1-2 currently have

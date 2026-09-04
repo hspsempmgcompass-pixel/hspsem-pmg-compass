@@ -40,17 +40,19 @@ def test_isolation_still_holds_after_the_retrofit():
     assert offenders == [], offenders
 
 
-def test_every_page_still_sets_a_ccsm_browser_title():
-    """0e7af19 branded the tab because BOTH apps rendered an identical
-    'PMG Compass' title and the user could not tell CCSM from Provo apart."""
+def test_every_page_still_sets_a_hspse_browser_title():
+    """0e7af19 branded the tab (as "CCSM") because BOTH apps rendered an
+    identical 'PMG Compass' title and the user could not tell the mission's
+    dashboard from Provo's apart. Relabeled to HSPSE 2026-09-04 when this
+    fork's own tab titles were fixed (they still said "CCSM" from the fork)."""
     missing = []
     for p in [ROOT / "Home.py", *sorted((ROOT / "app_pages").glob("*.py"))]:
         if p.name == "__init__.py":
             continue
         text = p.read_text(encoding="utf-8-sig")
-        if "page_title=" in text and "CCSM" not in text.split("page_title=")[1][:60]:
+        if "page_title=" in text and "HSPSE" not in text.split("page_title=")[1][:60]:
             missing.append(p.name)
-    assert missing == [], f"pages without a CCSM-branded tab title: {missing}"
+    assert missing == [], f"pages without an HSPSE-branded tab title: {missing}"
 
 
 def test_spanish_never_reuses_an_english_placeholder_set():

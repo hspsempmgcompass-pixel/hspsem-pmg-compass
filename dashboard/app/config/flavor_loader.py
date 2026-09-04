@@ -223,7 +223,7 @@ class FlavorConfig:
         """Effectiveness composition weights: {effort, skill, ki}.
 
         Read from SCORE_CONFIG's second section, which is the same row
-        CCSM_AgentScores.gs uses to combine the three components — so the
+        HSPSEM_AgentScores.gs uses to combine the three components — so the
         dashboard explains the score the agent actually computed. CCSM's row is
         0.33/0.33/0.34; the old flavor default was Provo's 0.30/0.40/0.30 and
         silently reweighted every Effectiveness figure the app recomputed.

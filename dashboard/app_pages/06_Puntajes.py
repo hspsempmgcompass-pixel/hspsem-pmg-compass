@@ -60,7 +60,7 @@ from app.i18n import t
 # ── Page config ───────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="CCSM · Scores — PMG Compass",
+    page_title="HSPSE · Scores — PMG Compass",
     page_icon="",
     layout="wide",
 )
@@ -120,7 +120,7 @@ _YELLOW = "#713f12"   # 50–69
 _RED    = "#7f1d1d"   # < 50
 
 # Baseline weights shown in the config editor, and the metric universe it
-# offers. Both come from SCORE_CONFIG — the tab CCSM_AgentScores.gs itself
+# offers. Both come from SCORE_CONFIG — the tab HSPSEM_AgentScores.gs itself
 # reads — so the editor shows the mission its own configuration.
 #
 # These were three hardcoded dicts of Utah Provo's metrics (new_found,
@@ -1226,7 +1226,7 @@ def _render_scores_tab():
     st.info(
         t("Scores are automatically recomputed each Sunday at 11 PM Mountain Time by the "
         "AgentScores Apps Script engine. To trigger an immediate recalculation, open the "
-        "Google Apps Script editor for COMPASS_CCSM and run computeAllAreaScores().")
+        "Google Apps Script editor for COMPASS_HSPSE and run computeAllAreaScores().")
     )
 
     st.divider()
@@ -1241,7 +1241,7 @@ def _render_scores_tab():
     # A weight of 0 means the metric simply doesn't count.
     # Effort and Skill are asked separately rather than sharing one nightly
     # list: CCSM scores Skill on the four DERIVED rates (contact_rate, mc_rate,
-    # lesson_rate, close_rate), which are computed by CCSM_Agent1A.gs and so
+    # lesson_rate, close_rate), which are computed by HSPSEM_Agent1A.gs and so
     # have no QUESTIONS_CONFIG row. They reach the editor only through the
     # SCORE_CONFIG half of _component_universe's union, and only when asked for
     # by their own component.
@@ -1260,7 +1260,7 @@ def _render_scores_tab():
         st.warning(
             t("No metrics are configured for this mission, so there is nothing to "
               "weight. Check the QUESTIONS_CONFIG and SCORE_CONFIG tabs of "
-              "COMPASS_CCSM before editing score weights.")
+              "COMPASS_HSPSE before editing score weights.")
         )
         return
 
@@ -1565,7 +1565,7 @@ def _render_daily_tab():
     if not present:
         st.info(t(
             "None of this mission's nightly metrics appear in DAILY_LOG. Check the "
-            "QUESTIONS_CONFIG tab of COMPASS_CCSM, then re-run the nightly refresh."
+            "QUESTIONS_CONFIG tab of COMPASS_HSPSE, then re-run the nightly refresh."
         ))
         return
 

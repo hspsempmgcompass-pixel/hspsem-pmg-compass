@@ -1,17 +1,17 @@
 """
-transfer_engine.py — pure roster-merge logic for CCSM's Transfer Flow.
+transfer_engine.py — pure roster-merge logic for HSPSE's Transfer Flow.
 
 Ported from Utah Provo's app/ingestion/transfer_engine.py (docs/AgentTransfer.gs's
 sheet-side logic). Drive-only helpers (build_rezone_diff, suggest_area_renames)
-were dropped — CCSM's Transfer Flow has no Drive integration.
+were dropped — HSPSE's Transfer Flow has no Drive integration.
 
 Everything here is pure (in-memory lists/dicts, no I/O) so it is unit-testable
 and callable from the Streamlit page via app.db.sheets_client. The FORM sync
-half runs in Apps Script — see CCSM_TransferWebApp.gs.
+half runs in Apps Script — see HSPSEM_TransferWebApp.gs.
 
 MISSION_ORG rows and roster rows are dicts keyed by column name. MISSION_ORG
 uses `Area_Name`; a raw TRANSFER_IMPORT row uses `Area` (+ `Calling`), which
-parse_roster() normalizes into the MISSION_ORG shape. CCSM's live MISSION_ORG
+parse_roster() normalizes into the MISSION_ORG shape. HSPSE's live MISSION_ORG
 has no Language_Type, Area_ID, Companion3_Name, or Companion4_Name — every
 function below reads via .get(col, default), so those columns being absent is
 harmless (diffs against them always come out equal, new-area code that would

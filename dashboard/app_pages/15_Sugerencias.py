@@ -12,7 +12,7 @@ from app.db.queries import get_suggestions, set_suggestion_status, get_config_va
 from app.i18n import t
 
 st.set_page_config(
-    page_title="CCSM · Suggestions — PMG Compass",
+    page_title="HSPSE · Suggestions — PMG Compass",
     page_icon="",
     layout="wide",
 )
@@ -52,7 +52,7 @@ c7.metric(t("Rejected"), _count("Rejected"))
 # ── Controls ───────────────────────────────────────────────────────────────
 render_section_label(t("Filter"))
 f1, f3, f4 = st.columns([1, 2, 1])
-# Translated label -> stored value. These statuses live in COMPASS_CCSM and
+# Translated label -> stored value. These statuses live in COMPASS_HSPSE and
 # are read by the Apps Script agents, so the value handed to get_suggestions()
 # below must stay exactly as stored; only the label is translated.
 _STATUS_OPTS = {t(s): s for s in

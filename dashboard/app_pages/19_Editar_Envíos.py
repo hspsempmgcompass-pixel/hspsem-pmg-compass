@@ -34,7 +34,7 @@ from app.i18n import t
 from app.i18n.formats import fmt_date
 
 st.set_page_config(
-    page_title="CCSM · Editar Envíos — PMG Compass",
+    page_title="HSPSE · Editar Envíos — PMG Compass",
     page_icon="",
     layout="wide",
 )

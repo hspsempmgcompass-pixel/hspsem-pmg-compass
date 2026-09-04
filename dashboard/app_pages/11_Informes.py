@@ -9,7 +9,7 @@ real against the companionship's own goal), DAILY_LOG (nightly activity),
 SCORES, and MISSION_ORG for the roster.
 
 Utah Provo's version of this page read TABLEAU_DETAIL / TABLEAU_RANKING /
-TABLEAU_BAPTISMS and hardcoded a Provo stake list. COMPASS_CCSM has none of
+TABLEAU_BAPTISMS and hardcoded a Provo stake list. COMPASS_HSPSE has none of
 those tabs, which is why that page was cut from this app rather than ported.
 Nothing here depends on an export anyone has to remember to upload.
 """
@@ -39,7 +39,7 @@ from app.i18n import t
 from app.i18n.formats import NA, fmt_date, fmt_int, fmt_number, fmt_percent
 
 st.set_page_config(
-    page_title="CCSM · Informes — PMG Compass",
+    page_title="HSPSE · Informes — PMG Compass",
     page_icon="",
     layout="wide",
 )
@@ -183,7 +183,7 @@ if _scoped and not _sc.empty and "Zone" in _sc.columns:
 
 if _sc.empty:
     st.info(
-        t("No scores for this week yet. CCSM_AgentScores writes them on its "
+        t("No scores for this week yet. HSPSEM_AgentScores writes them on its "
           "weekly run.")
     )
 else:

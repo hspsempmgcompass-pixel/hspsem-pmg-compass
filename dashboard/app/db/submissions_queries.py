@@ -4,7 +4,7 @@ Which tab a correction belongs in
 ─────────────────────────────────
 NOT the form response sheets. NIGHTLY_FORM_RAW and WEEKLY_FORM_RAW are Google
 Forms' own linked sheets, and editing them would achieve nothing anyway:
-CCSM_Agent3 appends a DAILY_LOG row only for an Area|Date it has not already
+HSPSEM_Agent3 appends a DAILY_LOG row only for an Area|Date it has not already
 seen (a3_updateDailyLog's `existing` map), so a raw-sheet edit for a date the
 agent has already processed is never re-read. Same for the weekly parser.
 
@@ -14,7 +14,7 @@ from the agents' side, so an edited row survives every subsequent run, and
 LIVE_SNAPSHOT is rebuilt from DAILY_LOG on the next Agent3 pass, which is what
 carries a correction through to the rest of the app.
 
-Layouts, mirrored from CCSM_Agent3.gs so a correction cannot desync from what
+Layouts, mirrored from HSPSEM_Agent3.gs so a correction cannot desync from what
 the agent writes:
 
     DAILY_LOG   Date | Area | Zone | District | <one column per active

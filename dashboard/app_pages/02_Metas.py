@@ -93,7 +93,7 @@ from app.db.goals_queries import (
 )
 
 st.set_page_config(
-    page_title="CCSM · Goals — PMG Compass",
+    page_title="HSPSE · Goals — PMG Compass",
     layout="wide",
 )
 

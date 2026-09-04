@@ -18,7 +18,7 @@ from app.analytics.finding_funnel import (
 from app.i18n import t
 from app.i18n.formats import NA, fmt_date_range, fmt_day_month, fmt_int, fmt_percent
 
-st.set_page_config(page_title="CCSM · Finding Funnel — PMG Compass", page_icon="", layout="wide")
+st.set_page_config(page_title="HSPSE · Finding Funnel — PMG Compass", page_icon="", layout="wide")
 
 user = require_auth()
 inject_global_css()

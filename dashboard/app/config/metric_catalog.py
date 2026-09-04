@@ -14,17 +14,17 @@ The same dead catalogue was duplicated across three files, so they could drift
 from each other as well as from reality.
 
 QUESTIONS_CONFIG is the tab the Apps Script agents themselves read to decide
-which columns exist (CCSM_Agent3.a3_loadActiveMetrics, CCSM_Agent1A's
+which columns exist (HSPSEM_Agent3.a3_loadActiveMetrics, HSPSEM_Agent1A's
 a1a_loadCountMetrics), and it is editable from the Maintenance page. Reading it
 here means the dashboard and the agents cannot disagree about what a metric is,
 and a question added to the form shows up without a code change.
 
 What is NOT in QUESTIONS_CONFIG
 ───────────────────────────────
-The five rate/score metrics are computed by CCSM_Agent1A.gs from other
+The five rate/score metrics are computed by HSPSEM_Agent1A.gs from other
 metrics; they are never asked on a form, so they have no QUESTIONS_CONFIG row
 and have to be declared here. `tests/test_metric_catalog.py` parses
-CCSM_Agent1A.gs's own A1A_RATE_METRICS array and asserts this declaration
+HSPSEM_Agent1A.gs's own A1A_RATE_METRICS array and asserts this declaration
 matches it, so the duplication cannot silently drift — which is the entire
 failure mode this module exists to end.
 """
@@ -36,7 +36,7 @@ import streamlit as st
 from app.db.sheets_client import read_tab
 
 # ── Derived metrics (computed, never asked) ───────────────────────────────────
-# Mirrors A1A_RATE_METRICS in CCSM_Agent1A.gs — key -> Spanish display name,
+# Mirrors A1A_RATE_METRICS in HSPSEM_Agent1A.gs — key -> Spanish display name,
 # verbatim from that file. Kept in the same order for diffability.
 # Enforced equal by tests/test_metric_catalog.py::test_rate_metrics_match_agent1a.
 RATE_METRIC_LABELS: dict[str, str] = {
@@ -100,7 +100,7 @@ EN_LABEL_OVERRIDES: dict[str, str] = {
 #: Columns of DAILY_LOG that identify the row rather than measure anything.
 DAILY_META: frozenset[str] = frozenset({"Date", "Area", "Zone", "District"})
 
-#: Score dimensions written by CCSM_AgentScores.gs — column order matches
+#: Score dimensions written by HSPSEM_AgentScores.gs — column order matches
 #: get_scores_by_area()'s frame. These are score COMPONENTS, not form metrics,
 #: so they are not in QUESTIONS_CONFIG either.
 SCORE_LABELS: dict[str, str] = {

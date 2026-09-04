@@ -157,7 +157,7 @@ def _expectation_rate(entry: dict) -> str:
 
 # Rate/score metrics are averaged across areas, never summed — see
 # is_rate_metric() in app/config/metric_catalog.py, which mirrors
-# CCSM_Agent1A.gs's A1A_RATE_METRICS and is held to it by a test.
+# HSPSEM_Agent1A.gs's A1A_RATE_METRICS and is held to it by a test.
 
 _ANY = "— any —"
 

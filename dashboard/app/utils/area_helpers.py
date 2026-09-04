@@ -1,21 +1,25 @@
 from datetime import date, datetime, timedelta, time
 
 # Nightly submissions for "today" aren't reliably in the sheet until the evening
-# refresh runs (CCSM_Agent3's evening trigger, 9 PM mission-local — see
-# CCSM_TRIGGER_SCHEDULE in CCSM_Setup.gs). Before this cutoff we don't count the
-# current day at all, so it doesn't read as a miss and break the streak.
+# refresh runs (HSPSEM_Agent3's evening trigger, 9 PM mission-local — see
+# HSPSEM_TRIGGER_SCHEDULE in HSPSEM_Setup.gs). Before this cutoff we don't count
+# the current day at all, so it doesn't read as a miss and break the streak.
 NIGHTLY_CUTOFF = time(21, 30)  # 9:30 PM
 
 # Fallback only. The real value comes from AGENT_CONFIG's MISSION_TIMEZONE,
-# which is what every Apps Script agent uses (CCSM_Helpers.getMissionTimezone),
+# which is what every Apps Script agent uses (HSPSEM_Helpers.getMissionTimezone),
 # so the dashboard and the agents agree on which day it is.
 #
-# This was hardcoded to "America/Denver" — Utah Provo's zone, inherited with the
-# fork. Chile runs UTC-4/-3 against Denver's UTC-7/-6, so for the three-to-four
-# hours around local midnight `mission_today()` returned YESTERDAY for CCSM.
-# Everything date-anchored was affected: which day counts as missed, whether a
-# streak survives, which week a submission lands in.
-_FALLBACK_TZ = "America/Santiago"
+# This was hardcoded to "America/Denver" (Utah Provo's zone), then to
+# "America/Santiago" when CCSM forked it and never updated this fallback for
+# its own zone (a real bug there too — see the pattern). Chile/Honduras both
+# run well off Denver's UTC-7/-6, so for the hours around local midnight
+# `mission_today()` would return YESTERDAY. Set to HSPSE's own confirmed
+# zone — America/Tegucigalpa, all of Honduras, no DST (see
+# HSPSEM_HANDOFF_ACCESS_CHECKLIST.md / the 2026-08-29 intake). Everything
+# date-anchored depends on this being right: which day counts as missed,
+# whether a streak survives, which week a submission lands in.
+_FALLBACK_TZ = "America/Tegucigalpa"
 
 
 def mission_timezone() -> str:
