@@ -35,6 +35,15 @@ _ALWAYS_ALLOWED = {
     # TEMPORARY — deploy verification only, remove before go-live.
     "grayden16gmc@gmail.com",
 
+    # Named individuals who sign in with a personal @missionary.org address
+    # rather than an area mailbox. MISSION_ORG only lists numeric area
+    # mailboxes (500…@missionary.org), so get_allowed_emails() never covers
+    # these — they must be listed here explicitly.
+    # 2026-09-06: Carsen Wolff (trio companion, A021 "La Paz"; that row's
+    # Companion2_Email is blank) — hit the red "Acceso denegado" banner
+    # signing in as carsen.wolff@missionary.org.
+    "carsen.wolff@missionary.org",
+
     # TODO — carried over unmodified from the CCSM fork this repo started
     # from (2026-09-04). These are CCSM missionaries in a CCSM zone ("Los
     # Huertos, San Pedro zone" is not one of HSPSE's 10 zones), left in only
