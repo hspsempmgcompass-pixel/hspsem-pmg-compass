@@ -1,4 +1,38 @@
 /**
+ * ⚠️⚠️⚠️ DO NOT RUN goLiveApplyStepA / goLiveApplyStepZones (OR THEIR
+ * DRY-RUN COUNTERPARTS) AS WRITTEN. STEP B IS FIXED — see below. ⚠️⚠️⚠️
+ *
+ * STEP A and STEP ZONES still carry unmodified CCSM-fork data and must not
+ * be run:
+ *   - `GOLIVE_ZONE_AUG10_ZONES` ('San Pedro', 'Los Angeles Norte', 'Angol',
+ *     'Temuco Ñielol') are CCSM's Chilean zones. NONE of them exist in
+ *     HSPSE's `MISSION_ORG` — the real 10 HSPSE zones are El Carmen, La
+ *     Ceiba, La Paz, Miramar, Olanchito, Palermo, Planeta, Progreso, Santa
+ *     Rita, Satélite (`HSPSEM_ZONES` in HspsemData.gs). The zone-sanity gate
+ *     in golive_run_ refuses to run this as-is, so it fails safe — but it's
+ *     still not something to fix by guessing HSPSE zone names, since nobody
+ *     has decided HSPSE wants a phased-by-zone rollout at all.
+ *   - Step A's "45 of 98 leader rows" is CCSM's count, not HSPSE's.
+ *
+ * If the mission president ever wants a phased rollout (leaders-only trial,
+ * then a subset of zones, then mission-wide) rather than a single go-live,
+ * this file's STRUCTURE (the dry-run/apply split, the leader-flag scope, the
+ * relay-readiness gate) is sound and worth reusing for Step A / Step Zones —
+ * but they need that rollout-shape decision made first, plus real HSPSE zone
+ * names, before either is run. Left broken-on-purpose rather than guessed at.
+ *
+ * STEP B (mission-wide launch) has been fixed for HSPSE, 2026-09-16: nobody
+ * asked for a phased rollout, and MISSION_ORG.Active is already TRUE on all
+ * 82 rows (confirmed live), so a direct mission-wide launch matches the
+ * system's actual current state. Its date/systemStartDate are no longer a
+ * hardcoded past date — golive_stepB_() computes "today" (mission timezone)
+ * at call time, so whatever day you actually run goLiveApplyStepB, that's
+ * the day SYSTEM_START_DATE re-baselines to. This matters: real nightly
+ * reporting hasn't actually been happening (verified live, 2026-09-16 —
+ * NIGHTLY_FORM_RAW still only has the 8/29 seeded test data), so if
+ * SYSTEM_START_DATE were left at the stale 2026-09-09, missed-days/
+ * escalation logic would immediately flag ~7+ days of gaps for all 82 areas
+ * the moment it's live. Re-baselining to the actual go-live day avoids that.
  * ============================================================
  * HSPSEM_GoLive.gs — the two go-live config switches
  * PMG Compass | Honduras San Pedro Sula East Mission (HSPSEM)
@@ -6,37 +40,30 @@
  *
  * Moments that change what this system does to real people:
  *
- *   STEP A     — 2026-08-05, the leadership trial. Real mail starts, but only
- *                to leaders. 45 of the 98 MISSION_ORG rows carry a leader flag.
- *   STEP ZONES — 2026-08-10, a 4-zone phased rollout (San Pedro, Los Angeles
- *                Norte, Angol, Temuco Ñielol — ~42 of 98 rows). Neither
- *                LEADERS nor ALL fits a named subset of zones, so this scope
- *                reads MISSION_ORG.Zone directly.
- *   STEP B     — 2026-08-17, mission-wide launch. All 98 areas.
+ *   STEP A     — STALE (CCSM leader count), do not run.
+ *   STEP ZONES — STALE (CCSM zone names), do not run — fails safe if tried.
+ *   STEP B     — mission-wide launch, effective the day it's actually run.
+ *                All 82 areas (already Active=TRUE).
  *
  * WHY THIS IS A SCRIPT AND NOT A HAND EDIT
- * Step A sets 98 MISSION_ORG.Active booleans conditionally on five leader
- * flags, and Step B reverses all 98. Done by hand on the morning of, that is
- * where a mistake lives — and the mistake is either mass-mailing the whole
- * mission during a leadership-only trial, or silencing the leaders it exists
- * to test.
+ * Step B flips 82 MISSION_ORG.Active booleans (currently already all TRUE,
+ * but this stays the safe, auditable path rather than a raw AGENT_CONFIG
+ * cell edit) and re-baselines SYSTEM_START_DATE atomically. Done by hand,
+ * that combination is exactly where a mistake lives.
  *
  * WHY IT IS NOT ON A TIME TRIGGER
  * TEST_MODE -> FALSE is the one irreversible flip: the moment agent mail
  * reaches real missionaries. Its go/no-go depends on something no scheduled
  * job can evaluate — whether mail is actually being delivered. A trigger
- * firing at 00:01 on Aug 5 would flip it whether or not the relay was ever
- * configured, and that failure is silent: mail just stops. So goLiveApplyStepA
+ * firing at a fixed time would flip it whether or not the relay was ever
+ * configured, and that failure is silent: mail just stops. So goLiveApplyStepB
  * REFUSES to run unless the relay checks below pass.
  *
  * HOW TO RUN, on the day:
- *   1. Apps Script editor -> Run -> goLiveDryRunStepA   (writes NOTHING)
+ *   1. Apps Script editor -> Run -> goLiveDryRunStepB   (writes NOTHING)
  *   2. Read the log. Every change is listed as before -> after.
- *   3. Run -> goLiveApplyStepA
+ *   3. Run -> goLiveApplyStepB
  *   4. Run -> smokeTestPipeline  (HSPSEM_Setup.gs) to confirm the system is sane
- *
- * Same four steps for Step Zones (goLiveDryRunStepZones / goLiveApplyStepZones)
- * on 2026-08-10, and for Step B on 2026-08-17.
  *
  * Every function here is zero-argument (Apps Script's Run menu cannot pass
  * arguments) and idempotent — running apply twice is a no-op the second time.
@@ -88,17 +115,23 @@ var GOLIVE_STEP_ZONES_AUG10 = {
 };
 
 /**
- * Step B — 2026-08-17, mission-wide launch. Re-baselines SYSTEM_START_DATE the
- * same way Step A did, so no area is flagged for gaps before the day it
- * actually started.
+ * Step B — mission-wide launch, effective the day it's actually run.
+ *
+ * date/systemStartDate are computed at call time (golive_stepB_()) rather
+ * than hardcoded, specifically so SYSTEM_START_DATE always re-baselines to
+ * the real go-live day — see the file-header note on why that matters for
+ * missed-days/escalation logic given real reporting hasn't started yet.
  */
-var GOLIVE_STEP_B = {
-  name:            'STEP B — mission-wide launch',
-  date:            '2026-08-17',
-  testMode:        'FALSE',
-  systemStartDate: '2026-08-17',
-  activeScope:     'ALL'       // Active=TRUE on every row
-};
+function golive_stepB_() {
+  var today = Utilities.formatDate(new Date(), getMissionTimezone(), 'yyyy-MM-dd');
+  return {
+    name:            'STEP B — mission-wide launch',
+    date:            today,
+    testMode:        'FALSE',
+    systemStartDate: today,
+    activeScope:     'ALL'       // Active=TRUE on every row
+  };
+}
 
 // ─── PUBLIC ENTRY POINTS (zero-argument, for the Run menu) ───────────────────
 
@@ -106,8 +139,8 @@ function goLiveDryRunStepA()     { return golive_run_(GOLIVE_STEP_A, true); }
 function goLiveApplyStepA()      { return golive_run_(GOLIVE_STEP_A, false); }
 function goLiveDryRunStepZones() { return golive_run_(GOLIVE_STEP_ZONES_AUG10, true); }
 function goLiveApplyStepZones()  { return golive_run_(GOLIVE_STEP_ZONES_AUG10, false); }
-function goLiveDryRunStepB()     { return golive_run_(GOLIVE_STEP_B, true); }
-function goLiveApplyStepB()      { return golive_run_(GOLIVE_STEP_B, false); }
+function goLiveDryRunStepB()     { return golive_run_(golive_stepB_(), true); }
+function goLiveApplyStepB()      { return golive_run_(golive_stepB_(), false); }
 
 /**
  * Reports whether mail can actually be delivered, without sending anything.
@@ -305,6 +338,27 @@ function golive_run_(step, dryRun) {
   say('Intended effective date: ' + step.date);
 
   var changes = [];
+
+  // ── 0. Zone-name sanity gate ────────────────────────────────────────────────
+  // Catches exactly the failure mode described in the file-header warning: a
+  // ZONES-scoped step whose `zones` list doesn't match any real HSPSEM_ZONES
+  // entry would silently activate zero areas. Checked in both dry-run and
+  // apply, since a dry run should surface this before anyone trusts its output.
+  if (step.activeScope === 'ZONES') {
+    var realZones = (typeof HSPSEM_ZONES !== 'undefined' ? HSPSEM_ZONES : []).map(function(z) {
+      return String(z).trim().toLowerCase();
+    });
+    var unknownZones = (step.zones || []).filter(function(z) {
+      return realZones.indexOf(String(z).trim().toLowerCase()) === -1;
+    });
+    if (unknownZones.length > 0) {
+      say('  ERROR step.zones contains names not in HSPSEM_ZONES: ' + unknownZones.join(', ') +
+          '. Real HSPSE zones are: ' + (typeof HSPSEM_ZONES !== 'undefined' ? HSPSEM_ZONES.join(', ') : '(HSPSEM_ZONES not loaded)') + '.');
+      say('REFUSING TO ' + mode + '. This step\'s zone list has never been updated for HSPSE ' +
+          '(see the warning at the top of this file) — running it would activate zero areas.');
+      return { ok: false, applied: false, changes: [], lines: lines };
+    }
+  }
 
   // ── 1. Relay / capacity gate ───────────────────────────────────────────────
   var readiness = golive_relayReadiness_(step);
