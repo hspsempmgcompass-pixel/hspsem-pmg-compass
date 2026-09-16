@@ -1798,6 +1798,7 @@ ES: dict[str, str] = {
     "Working...": "Trabajando...",
     "{status_text} ({elapsed} elapsed)": "{status_text} ({elapsed} transcurrido)",
     "Cloud job failed: {summary}": "El trabajo en la nube falló: {summary}",
+    "Could not start the cloud job: {error}": "No se pudo iniciar el trabajo en la nube: {error}",
     "{error} — check the GitHub Actions tab; it may still finish.":
         "{error} — revise la pestaña de GitHub Actions; podría terminar todavía.",
 

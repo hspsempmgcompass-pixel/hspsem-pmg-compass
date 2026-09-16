@@ -11,6 +11,7 @@ import streamlit as st
 
 from app.i18n import t
 from app.integrations import cloud_job_status, github_actions
+from app.integrations.github_actions import DispatchError
 
 _POLL_INTERVAL_S = 3
 _TIMEOUT_S = 1200  # 20 minutes
@@ -80,7 +81,6 @@ def run_cloud_job(job_type: str, workflow_file: str, dispatch_inputs: dict,
     ultimate ceiling — keep this comfortably under that)."""
     job_id = str(uuid.uuid4())
     cloud_job_status.create_job(job_id, job_type)
-    github_actions.dispatch_workflow(workflow_file, {**dispatch_inputs, "job_id": job_id})
 
     with st.status(running_label, expanded=True) as box:
         # A single placeholder, updated in place — box.write() here would
@@ -94,7 +94,12 @@ def run_cloud_job(job_type: str, workflow_file: str, dispatch_inputs: dict,
             progress.write(_progress_message(job, time.monotonic() - start))
 
         try:
+            github_actions.dispatch_workflow(workflow_file, {**dispatch_inputs, "job_id": job_id})
             job = _poll_until_terminal(job_id, on_tick=on_tick, timeout_s=timeout_s)
+        except DispatchError as e:
+            box.update(label="Failed", state="error")
+            st.error(t("Could not start the cloud job: {error}", error=str(e)))
+            raise CloudJobFailed(str(e)) from e
         except CloudJobFailed as e:
             box.update(label="Failed", state="error")
             st.error(t("Cloud job failed: {summary}", summary=e.result_summary))
