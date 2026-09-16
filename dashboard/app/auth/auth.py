@@ -44,16 +44,18 @@ _ALWAYS_ALLOWED = {
     # signing in as carsen.wolff@missionary.org.
     "carsen.wolff@missionary.org",
 
-    # TODO — carried over unmodified from the CCSM fork this repo started
-    # from (2026-09-04). These are CCSM missionaries in a CCSM zone ("Los
-    # Huertos, San Pedro zone" is not one of HSPSE's 10 zones), left in only
-    # because they don't grant access to anything real — HSPSE's own
-    # MISSION_ORG governs the real allowlist via get_allowed_emails(). This
-    # section needs HSPSE's real personal-email roster (not yet gathered —
-    # see [[project-hspse-mission-onboarding]]) once it exists.
-    "zackary.butterfield@missionary.org",   # CCSM: Los Huertos, San Pedro zone
-    "hyrum.turner@missionary.org",          # CCSM: AP1
-    "anderson.phillips@missionary.org",     # CCSM: AP2
+    # TODO — HSPSE's real personal-email roster still needs to be gathered
+    # (anyone signing in with a personal address rather than their area's
+    # shared @missionary.org mailbox needs an entry here; MISSION_ORG's
+    # get_allowed_emails() only covers area mailboxes). 2026-09-16: removed 3
+    # CCSM missionaries' real emails that had been sitting here unmodified
+    # since the 2026-09-04 fork — despite the prior comment's claim that they
+    # "don't grant access to anything real," membership in _ALWAYS_ALLOWED is
+    # unioned directly into require_auth()'s sign-in allowlist AND satisfies
+    # is_leadership() (line ~79), so those 3 people had standing leadership
+    # access to HSPSE's dashboard the moment they were on the Streamlit Cloud
+    # invite list or the app went public — neither true today, but a latent
+    # cross-mission access bug, not inert residue.
 
     # Mission President — MISSION_ORG has no churchofjesuschrist.org
     # addresses at all, so the sheet grants him nothing on its own (see
